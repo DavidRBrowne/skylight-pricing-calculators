@@ -18,8 +18,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "security": "npm audit",
-    "security:fix": "npm audit fix",
-    "prebuild": "npm run security"
+    "security:fix": "npm audit fix"
   },
   "eslintConfig": {
     "extends": [

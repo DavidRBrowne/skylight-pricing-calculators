@@ -515,4 +515,4 @@ useEffect(() => {
   );
 };
 
-export default SonaCalculator;
+export default SonaCalculator;// Updated for Vercel deployment
