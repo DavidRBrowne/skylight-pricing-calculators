@@ -1,7 +1,4 @@
-
-// SonaCalculator.jsx - Production Ready Component for Cursor Implementation
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const SonaCalculator = () => {
   // State management
@@ -16,7 +13,7 @@ const SonaCalculator = () => {
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
 
-  // Pricing tables - move to separate data files in production
+  // Pricing tables
   const dimoutPricing = {
     1000: { 1000: 344, 1200: 354, 1400: 365, 1600: 374, 1800: 386, 2000: 395, 2200: 407, 2400: 419, 2600: 431, 2800: 443, 3000: 455 },
     1500: { 1000: 361, 1200: 372, 1400: 380, 1600: 391, 1800: 402, 2000: 408, 2200: 420, 2400: 432, 2600: 444, 2800: 457, 3000: 469 },
@@ -101,10 +98,10 @@ const SonaCalculator = () => {
     return { total: 12, spooling: 6, support: 6 };
   };
 
-  const findNearestDimension = (value, availableValues) => {
-    return availableValues.reduce((prev, curr) => 
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
-    );
+  const findNextSizeUp = (value, availableValues) => {
+    // Always round UP to next available pricing size
+    const sortedValues = availableValues.sort((a, b) => a - b);
+    return sortedValues.find(size => size >= value) || sortedValues[sortedValues.length - 1];
   };
 
   const validateInputs = () => {
@@ -135,12 +132,12 @@ const SonaCalculator = () => {
     const length = parseInt(recess.length);
     const width = parseInt(recess.width);
     
-    // Find nearest pricing dimensions
+    // Find next size up for pricing
     const lengthKeys = Object.keys(dimoutPricing).map(Number);
     const widthKeys = Object.keys(dimoutPricing[1000]).map(Number);
     
-    const nearestLength = findNearestDimension(length, lengthKeys);
-    const nearestWidth = findNearestDimension(width, widthKeys);
+    const nearestLength = findNextSizeUp(length, lengthKeys);
+    const nearestWidth = findNextSizeUp(width, widthKeys);
 
     // Get pricing
     const pricingTable = fabricType === 'dimout' ? dimoutPricing : blackoutPricing;
@@ -187,6 +184,14 @@ const SonaCalculator = () => {
       }
     });
   };
+
+  // Auto-update quote when options change (but only if a quote already exists)
+useEffect(() => {
+  if (quote) {
+    calculateQuote();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin]);
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white">
