@@ -195,7 +195,7 @@ useEffect(() => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Sona Sky Series - Skylight Blind Calculator</h1>
+      <h1 className="text-4xl font-bold text-green-700 mb-8 text-center border-b-2 border-green-200 pb-4">Sona Sky Series - Skylight Blind Calculator</h1>
       
       {/* Input Section */}
       <div className="bg-gray-50 p-6 rounded-lg mb-8">
@@ -368,12 +368,12 @@ useEffect(() => {
 
       {/* Calculate Button */}
       <div className="text-center mb-8">
-        <button
-          onClick={calculateQuote}
-          className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-        >
-          Calculate Quote
-        </button>
+      <button
+        onClick={calculateQuote}
+        className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg"
+      >
+        Calculate Quote
+      </button>
       </div>
 
       {/* Quote Display */}
