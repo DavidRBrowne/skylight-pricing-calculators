@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import brandConfig from './brand-config';
 
 const SonaCalculator = () => {
+  console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
   // State management
   const [recess, setRecess] = useState({ length: '', width: '' });
   const [fabricType, setFabricType] = useState('dimout');
@@ -195,7 +196,7 @@ useEffect(() => {
 }, [fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin]);
 
   return (
-    <div className="min-h-screen bg-red-500" style={{ fontFamily: brandConfig.fonts.body }}>
+    <div className="min-h-screen bg-gray-50" style={{ fontFamily: brandConfig.fonts.body }}>
       {/* Header with logo and title */}
       <header className="flex items-center justify-between px-8 py-6 bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center gap-4">
@@ -203,10 +204,11 @@ useEffect(() => {
           <span className="text-2xl font-semibold tracking-tight" style={{ color: brandConfig.colors.teal, fontFamily: brandConfig.fonts.heading }}>Sona Sky Series - Skylight Blind Calculator</span>
         </div>
       </header>
+
       {/* Responsive grid layout */}
-      <main className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto px-4 py-10" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
         {/* Input Panel (Steps 1-5) */}
-        <section className="lg:col-span-1">
+        <section style={{ gridColumn: '1' }}>
           <div className="bg-white rounded-2xl shadow-lg p-8">
             {/* Progress indicator */}
             <div className="flex items-center mb-8">
@@ -220,95 +222,84 @@ useEffect(() => {
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>1. Recess Dimensions (mm)</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: brandConfig.colors.deepTeal }}>Width</label>
-                  <input
-                    type="number"
-                    value={recess.width}
-                    onChange={(e) => setRecess({...recess, width: e.target.value})}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
-                    placeholder="Min 500mm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: brandConfig.colors.deepTeal }}>Length (Drop)</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Length</label>
                   <input
                     type="number"
                     value={recess.length}
                     onChange={(e) => setRecess({...recess, length: e.target.value})}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
-                    placeholder="Min 500mm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="1000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Width</label>
+                  <input
+                    type="number"
+                    value={recess.width}
+                    onChange={(e) => setRecess({...recess, width: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="1000"
                   />
                 </div>
               </div>
-              
-              {errors.length > 0 && (
-                <div className="mt-4 p-3 border rounded" style={{ 
-                  backgroundColor: brandConfig.colors.brightPink + '10',
-                  borderColor: brandConfig.colors.brightPink
-                }}>
-                  {errors.map((error, index) => (
-                    <p key={index} className="text-sm" style={{ color: brandConfig.colors.brightPink }}>{error}</p>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Step 2: Fabric Selection */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>2. Fabric Selection</h2>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Fabric Type</label>
                   <div className="space-y-2">
                     <label className="flex items-center">
                       <input
                         type="radio"
+                        name="fabricType"
                         value="dimout"
                         checked={fabricType === 'dimout'}
                         onChange={(e) => setFabricType(e.target.value)}
                         className="mr-2"
-                        style={{ accentColor: brandConfig.colors.teal }}
                       />
-                      Dimout (Light Filtering)
+                      <span>Dimout</span>
                     </label>
                     <label className="flex items-center">
                       <input
                         type="radio"
+                        name="fabricType"
                         value="blackout"
                         checked={fabricType === 'blackout'}
                         onChange={(e) => setFabricType(e.target.value)}
                         className="mr-2"
-                        style={{ accentColor: brandConfig.colors.teal }}
                       />
-                      Blackout (Room Darkening)
+                      <span>Blackout</span>
                     </label>
                   </div>
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Fabric Color</label>
                   <select
                     value={fabricColor}
                     onChange={(e) => setFabricColor(e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    {fabricColors[fabricType].map(color => (
-                      <option key={color} value={color}>
-                        {color.charAt(0).toUpperCase() + color.slice(1)}
-                      </option>
-                    ))}
+                    <option value="snow">Snow</option>
+                    <option value="tusk">Tusk</option>
+                    <option value="chiffon">Chiffon</option>
+                    <option value="latte">Latte</option>
+                    <option value="umber">Umber</option>
+                    <option value="oyster">Oyster</option>
+                    <option value="silver">Silver</option>
+                    <option value="ash">Ash</option>
+                    <option value="lead">Lead</option>
+                    <option value="midnight">Midnight</option>
+                    <option value="steel">Steel</option>
+                    <option value="denim">Denim</option>
+                    <option value="coin">Coin</option>
+                    <option value="anchor">Anchor</option>
+                    <option value="metal">Metal</option>
+                    <option value="linen">Linen</option>
+                    <option value="sand">Sand</option>
+                    <option value="night">Night</option>
                   </select>
                 </div>
               </div>
@@ -317,38 +308,36 @@ useEffect(() => {
             {/* Step 3: Hardware & Power */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>3. Hardware & Power</h2>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Hardware Color</label>
                   <select
                     value={hardwareColor}
                     onChange={(e) => setHardwareColor(e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    {Object.entries(hardwareOptions).map(([key, name]) => (
-                      <option key={key} value={key}>{name}</option>
-                    ))}
+                    <option value="white">White RAL9016</option>
+                    <option value="grey">Grey RAL7040</option>
+                    <option value="anthracite">Anthracite RAL7016</option>
+                    <option value="black">Black RAL9005</option>
+                    <option value="bespoke">Bespoke RAL (POA)</option>
                   </select>
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Power Supply</label>
                   <select
                     value={powerSupply}
                     onChange={(e) => setPowerSupply(e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    {Object.entries(powerOptions).map(([key, option]) => (
-                      <option key={key} value={key}>{option.name} - £{option.price}</option>
-                    ))}
+                    <option value="solar">Solar Pack (£72)</option>
+                    <option value="adapter">12v Mains Adapter (£18)</option>
+                    <option value="battery">Li-on USB-C Battery (£38)</option>
+                    <option value="charger">Li-on USB-C Battery Charger (£14)</option>
+                    <option value="sna45">SNA-45-12 Mains Transformer (£38)</option>
+                    <option value="sna100">SNA-100-12 Mains Transformer (£63)</option>
+                    <option value="sna75">SNA-75-12 Mains Transformer (£48)</option>
+                    <option value="sna12151">SNA12151 Mains Transformer (£108)</option>
                   </select>
                 </div>
               </div>
@@ -357,42 +346,31 @@ useEffect(() => {
             {/* Step 4: Control Options */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>4. Control Options</h2>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Handset</label>
                   <select
                     value={handset}
                     onChange={(e) => setHandset(e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    {Object.entries(handsetOptions).map(([key, option]) => (
-                      <option key={key} value={key}>
-                        {option.name} {option.price > 0 ? `- £${option.price}` : ''}
-                      </option>
-                    ))}
+                    <option value="none">No Handset (£0)</option>
+                    <option value="situo1">Situo 1 (1-channel) (£28)</option>
+                    <option value="situo5">Situo 5 (5-channel) (£45)</option>
+                    <option value="telis16">Telis 16 (16-channel) (£128)</option>
+                    <option value="tahoma">TaHoma Switch (£138)</option>
                   </select>
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch</label>
                   <select
                     value={wallSwitch}
                     onChange={(e) => setWallSwitch(e.target.value)}
-                    className="w-full p-2 border rounded focus:ring-2"
-                    style={{ 
-                      borderColor: brandConfig.colors.lightGrey,
-                      focusRingColor: brandConfig.colors.teal
-                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   >
-                    {Object.entries(wallSwitchOptions).map(([key, option]) => (
-                      <option key={key} value={key}>
-                        {option.name} {option.price > 0 ? `- £${option.price}` : ''}
-                      </option>
-                    ))}
+                    <option value="none">No Wall Switch (£0)</option>
+                    <option value="smoove">Smoove Origin (1-channel) (£32)</option>
+                    <option value="smoove4">Smoove Origin 4 (4-channel) (£45)</option>
                   </select>
                 </div>
               </div>
@@ -401,46 +379,43 @@ useEffect(() => {
             {/* Step 5: Retail Pricing Margin */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>5. Retail Pricing Margin</h2>
-              <div className="grid grid-cols-4 gap-4">
-                {[50, 56, 60, 65].map(marginOption => (
-                  <label key={marginOption} className="flex items-center p-3 rounded border cursor-pointer" style={{ 
-                    backgroundColor: brandConfig.colors.white,
-                    borderColor: brandConfig.colors.lightGrey
-                  }}>
-                    <input
-                      type="radio"
-                      value={marginOption}
-                      checked={margin === marginOption}
-                      onChange={(e) => setMargin(Number(e.target.value))}
-                      className="mr-2"
-                      style={{ accentColor: brandConfig.colors.teal }}
-                    />
-                    <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>{marginOption}%</span>
-                  </label>
-                ))}
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Margin Percentage</label>
+                <input
+                  type="number"
+                  value={margin}
+                  onChange={(e) => setMargin(parseFloat(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="30"
+                />
               </div>
             </div>
 
             {/* Calculate Button */}
-            <div className="text-center">
-              <button
-                onClick={calculateQuote}
-                className="px-8 py-3 rounded-lg font-semibold transition-colors shadow-lg"
-                style={{ 
-                  backgroundColor: brandConfig.colors.teal,
-                  color: brandConfig.colors.white,
-                  fontFamily: brandConfig.fonts.heading
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = brandConfig.colors.deepTeal}
-                onMouseOut={(e) => e.target.style.backgroundColor = brandConfig.colors.teal}
-              >
-                Calculate Quote
-              </button>
-            </div>
+            <button
+              onClick={calculateQuote}
+              className="w-full bg-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-teal-700 transition-colors"
+              style={{ backgroundColor: brandConfig.colors.teal }}
+            >
+              Calculate Quote
+            </button>
+
+            {/* Error Display */}
+            {errors.length > 0 && (
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <h3 className="text-red-800 font-medium mb-2">Please fix the following errors:</h3>
+                <ul className="text-red-700 text-sm space-y-1">
+                  {errors.map((error, index) => (
+                    <li key={index}>• {error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
+
         {/* Output Cards */}
-        <section className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section style={{ gridColumn: '2', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
           {/* Quote Summary Card */}
           {quote && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
@@ -449,90 +424,56 @@ useEffect(() => {
               <div className="space-y-3">
                 <div>
                   <h3 className="font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Specifications</h3>
-                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess Size:</span> {quote.recess.width}mm × {quote.recess.length}mm</p>
-                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Pricing Size:</span> {quote.nearest.width}mm × {quote.nearest.length}mm</p>
-                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Fabric:</span> {quote.fabric.type.charAt(0).toUpperCase() + quote.fabric.type.slice(1)} - {quote.fabric.color.charAt(0).toUpperCase() + quote.fabric.color.slice(1)}</p>
+                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess:</span> {quote.recess.length}mm × {quote.recess.width}mm</p>
+                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Fabric:</span> {quote.fabric.type} - {quote.fabric.color}</p>
                   <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Hardware:</span> {quote.hardware}</p>
-                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cords Visible (open):</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling + {quote.cordCount.support} support nylon)</p>
+                  <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>
                 </div>
               </div>
             </div>
           )}
-          
+
           {/* Components Card */}
           {quote && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Components</h2>
-              <div className="space-y-3">
+              
+              <div className="space-y-2">
                 <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power:</span> {quote.components.power}</p>
                 <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Handset:</span> {quote.components.handset}</p>
                 <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch:</span> {quote.components.wallSwitch}</p>
               </div>
             </div>
           )}
-          
+
           {/* Buy Price Breakdown Card */}
           {quote && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Buy Price Breakdown (OBP)</h2>
+              
               <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Skylight Blind ({quote.fabric.type})</span>
-                  <span>£{quote.pricing.blind}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Side Trims (mandatory)</span>
-                  <span>£{quote.pricing.sideTrims}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Power Supply</span>
-                  <span>£{quote.pricing.power}</span>
-                </div>
-                {quote.pricing.handset > 0 && (
-                  <div className="flex justify-between">
-                    <span>Handset</span>
-                    <span>£{quote.pricing.handset}</span>
-                  </div>
-                )}
-                {quote.pricing.wallSwitch > 0 && (
-                  <div className="flex justify-between">
-                    <span>Wall Switch</span>
-                    <span>£{quote.pricing.wallSwitch}</span>
-                  </div>
-                )}
-                <div className="flex justify-between border-t pt-2" style={{ borderColor: brandConfig.colors.lightGrey }}>
-                  <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Buy Subtotal</span>
-                  <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>£{quote.pricing.buySubtotal}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span style={{ color: brandConfig.colors.black }}>UK Courier Delivery</span>
-                  <span style={{ color: brandConfig.colors.black }}>£{quote.pricing.shipping}</span>
-                </div>
-                <div className="flex justify-between border-t pt-2 font-bold" style={{ borderColor: brandConfig.colors.lightGrey }}>
-                  <span style={{ color: brandConfig.colors.deepTeal }}>Total Buy Price (ex VAT)</span>
-                  <span style={{ color: brandConfig.colors.deepTeal }}>£{quote.pricing.buyTotal}</span>
-                </div>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind:</span> £{quote.pricing.blind}</p>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Side Trims:</span> £{quote.pricing.sideTrims}</p>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power:</span> £{quote.pricing.power}</p>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Handset:</span> £{quote.pricing.handset}</p>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch:</span> £{quote.pricing.wallSwitch}</p>
+                <hr className="my-3" />
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Subtotal:</span> £{quote.pricing.buySubtotal}</p>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Shipping:</span> £{quote.pricing.shipping}</p>
+                <p className="text-lg font-semibold" style={{ color: brandConfig.colors.deepTeal }}><span className="font-medium">Total OBP:</span> £{quote.pricing.buyTotal}</p>
               </div>
             </div>
           )}
-          
+
           {/* Retail Pricing Card */}
           {quote && (
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Retail Pricing ({quote.pricing.margin}% Margin)</h2>
+              <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Retail Pricing (w/ {quote.pricing.margin}% Margin)</h2>
+              
               <div className="space-y-2">
-                <div className="flex justify-between border-t pt-2 font-bold" style={{ borderColor: brandConfig.colors.lightGrey, color: brandConfig.colors.teal }}>
-                  <span>Retail Total (ex VAT)</span>
-                  <span>£{quote.pricing.retailTotal}</span>
-                </div>
-                <div className="flex justify-between border-t pt-2 text-lg font-bold" style={{ borderColor: brandConfig.colors.lightGrey, color: brandConfig.colors.deepTeal }}>
-                  <span>Retail Total (inc VAT)</span>
-                  <span>£{quote.pricing.retailTotalIncVAT}</span>
-                </div>
-                <div className="text-xs mt-2" style={{ color: brandConfig.colors.gray[600] }}>
-                  Margin applied to total OBP (£{quote.pricing.buyTotal}) including delivery<br/>
-                  Inc VAT price rounded up to nearest even number for 50% deposit convenience
-                </div>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Retail Total (ex VAT):</span> £{quote.pricing.retailTotal}</p>
+                <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>VAT (20%):</span> £{Math.round(quote.pricing.retailTotal * 0.2)}</p>
+                <p className="text-xl font-bold" style={{ color: brandConfig.colors.teal }}><span className="font-medium">Total Inc VAT:</span> £{quote.pricing.retailTotalIncVAT}</p>
               </div>
             </div>
           )}

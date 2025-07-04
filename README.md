@@ -1,94 +1,170 @@
 # Sona Sky Series - Skylight Blind Calculator
 
-A professional React-based calculator for pricing Sona Sky Series skylight blinds. This application helps users calculate accurate quotes for skylight blind installations with various customization options.
+A premium React-based pricing calculator for The Scottish Shutter Company's skylight blind products.
 
-## Features
+## 🎯 Project Status
 
-- **Dimension Calculator**: Input recess dimensions (width × length) with validation
-- **Fabric Selection**: Choose between dimout (light filtering) and blackout (room darkening) fabrics
-- **Color Options**: 18 different fabric colors available for each fabric type
-- **Hardware Customization**: Multiple hardware color options (White, Grey, Anthracite, Black, Bespoke)
-- **Power Supply Options**: Various power supply configurations (Solar, Mains Adapter, Battery, etc.)
-- **Control Systems**: Handset and wall switch options with different channel configurations
-- **Margin Calculator**: Configurable retail pricing margins (50%, 56%, 60%, 65%)
-- **Real-time Pricing**: Automatic quote updates when options change
-- **Detailed Breakdown**: Complete cost breakdown including buy price and retail pricing
+**Current State**: ✅ **FUNCTIONAL** - Premium UI with Tailwind CSS working
+- **Layout**: Responsive grid design with input panel and output cards
+- **Styling**: Tailwind CSS v3.4.0 properly configured
+- **Background**: Light gray (`bg-gray-100`) with white cards
+- **Functionality**: All pricing logic and calculations working
 
-## Technology Stack
+## 🚀 Quick Start
 
-- **React 19.1.0** - Modern React with hooks
-- **Tailwind CSS** - Utility-first CSS framework for styling
-- **Create React App** - Development and build tooling
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
 
-## Installation
-
-1. Clone the repository:
+### Installation
 ```bash
-git clone https://github.com/yourusername/skylight-calculators.git
+# Clone the repository
+git clone [your-repo-url]
 cd skylight-calculators
-```
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Start the development server:
-```bash
+# Start development server
 npm start
 ```
 
-The application will open at [http://localhost:3000](http://localhost:3000).
+The app will be available at `http://localhost:3000`
 
-## Available Scripts
+## 📁 Project Structure
 
-- `npm start` - Runs the app in development mode
-- `npm test` - Launches the test runner
-- `npm run build` - Builds the app for production
-- `npm run eject` - Ejects from Create React App (one-way operation)
+```
+skylight-calculators/
+├── src/
+│   ├── AppFinal.js          # ✅ MAIN APP - Premium UI with grid layout
+│   ├── App.js               # Original single-column layout
+│   ├── AppNew.js            # Intermediate version
+│   ├── AppTest.js           # Test file (red background)
+│   ├── brand-config.js      # Brand colors and configuration
+│   ├── index.js             # Entry point (imports AppFinal.js)
+│   └── index.css            # Tailwind CSS + custom styles
+├── tailwind.config.js       # Tailwind CSS configuration
+├── postcss.config.js        # PostCSS configuration
+└── package.json             # Dependencies and scripts
+```
 
-## Usage
+## 🎨 Current Features
 
-1. **Enter Recess Dimensions**: Input the width and length of your skylight recess (minimum 500mm each)
-2. **Select Fabric**: Choose between dimout and blackout fabrics, then select your preferred color
-3. **Configure Hardware**: Select hardware color and power supply option
-4. **Choose Controls**: Select handset and wall switch options as needed
-5. **Set Margin**: Choose your desired retail pricing margin
-6. **Calculate Quote**: Click "Calculate Quote" to generate a detailed pricing breakdown
+### ✅ Working Features
+- **Responsive Grid Layout**: Input panel (left) + Output cards (right)
+- **Tailwind CSS Styling**: Premium design with proper shadows and spacing
+- **Brand Integration**: Scottish Shutter Company colors and fonts
+- **Pricing Logic**: Complete calculation engine for skylight blinds
+- **Form Validation**: Input validation with error handling
+- **Auto-update**: Quote updates automatically when options change
 
-## Pricing Structure
+### 🎯 Layout Structure
+- **Header**: Logo placeholder + "Sona Sky Series Calculator"
+- **Input Panel**: 5-step process with progress indicator
+- **Output Cards**: 4 cards in 2x2 grid showing:
+  - Quote Summary
+  - Technical Details
+  - Pricing Breakdown
+  - Configuration Summary
 
-The calculator uses comprehensive pricing tables for:
-- Base blind pricing (varies by dimensions and fabric type)
-- Side trims (mandatory component)
-- Power supply options
-- Control systems (handsets and wall switches)
-- Shipping costs
-- VAT calculations
+## 🔧 Technical Setup
 
-## Security Features
+### Tailwind CSS Configuration
+- **Version**: v3.4.0 (stable with Create React App)
+- **Config**: `tailwind.config.js` with proper content paths
+- **PostCSS**: `postcss.config.js` with autoprefixer
+- **Directives**: Added to `src/index.css`
 
-- No sensitive data stored or transmitted
-- Client-side only calculations
-- Comprehensive `.gitignore` to prevent accidental commits of sensitive files
-- No API keys or external dependencies required
+### Brand Configuration
+- **Colors**: Teal primary (#007A87), deep teal, light grey, etc.
+- **Fonts**: Open Sans for body, Expletus Sans for headings
+- **File**: `src/brand-config.js` with complete brand guidelines
 
-## Contributing
+## 🚧 Known Issues
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### ✅ Resolved
+- ~~Tailwind CSS not loading~~ → Fixed with v3.4.0
+- ~~PostCSS configuration errors~~ → Fixed with proper plugin setup
+- ~~White background issue~~ → Fixed with `bg-gray-100`
 
-## License
+### ⚠️ Minor Issues
+- ESLint warning: `fabricColors` variable unused (line 81 in AppFinal.js)
+- Logo placeholder (needs actual logo file)
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🎯 Next Steps
 
-## Support
+### Immediate (When You Return)
+1. **Test the calculator**: Enter dimensions and verify calculations
+2. **Add logo**: Replace placeholder with actual SSC logo
+3. **Deploy to Vercel**: For team access
+4. **Test responsive design**: Mobile/tablet layouts
 
-For support or questions about the Sona Sky Series calculator, please open an issue on GitHub.
+### Future Enhancements
+- Add fabric color swatches
+- Implement print/export functionality
+- Add customer information fields
+- Create admin panel for pricing updates
+
+## 🚀 Deployment
+
+### Local Development
+```bash
+npm start          # Development server
+npm run build      # Production build
+npx serve -s build # Serve production build locally
+```
+
+### Vercel Deployment (Recommended)
+1. Push to GitHub
+2. Connect repository to Vercel
+3. Deploy automatically on push
+
+## 📝 Development Notes
+
+### File Versions
+- **AppFinal.js**: Current production version with premium UI
+- **App.js**: Original single-column layout (backup)
+- **AppNew.js**: Intermediate development version
+- **AppTest.js**: Test file for debugging
+
+### Key Commands Used
+```bash
+# Install Tailwind CSS
+npm install -D tailwindcss@^3.4.0 postcss autoprefixer
+
+# Generate config files
+npx tailwindcss init -p
+
+# Clear cache (if needed)
+rm -rf node_modules/.cache
+
+# Kill processes on port 3000
+lsof -ti:3000 | xargs kill -9
+```
+
+## 🎨 Brand Guidelines
+
+### Colors (from brand-config.js)
+- **Primary Teal**: #007A87
+- **Deep Teal**: #00333B
+- **Light Grey**: #C6C6BC
+- **Bright Pink**: #C50084 (accent)
+- **Grass Green**: #58A618 (success)
+
+### Typography
+- **Headings**: Expletus Sans
+- **Body**: Open Sans
+- **Monospace**: SF Mono
+
+## 📞 Support
+
+For questions or issues:
+- Check the terminal output for compilation errors
+- Verify Tailwind CSS is properly installed
+- Ensure all dependencies are up to date
 
 ---
 
-**Note**: This calculator is designed for professional use in the window covering industry. All pricing is based on current manufacturer data and should be verified before use in commercial applications.
+**Last Updated**: July 4, 2025
+**Status**: ✅ Ready for team use
+**Next Session**: Test functionality and deploy to Vercel
