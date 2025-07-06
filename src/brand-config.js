@@ -38,8 +38,10 @@ export const brandConfig = {
 
   // Typography - The Scottish Shutter Company
   fonts: {
-    heading: '"Expletus Sans", "Open Sans", Helvetica, sans-serif',
+    heading: '"Open Sans", Helvetica, sans-serif',
     body: '"Open Sans", Helvetica, sans-serif',
+    light: '"Open Sans Light", "Open Sans", Helvetica, sans-serif',
+    semibold: '"Open Sans Semi Bold", "Open Sans", Helvetica, sans-serif',
     mono: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace'
   },
 
@@ -111,6 +113,8 @@ export const tailwindConfig = {
       fontFamily: {
         sans: brandConfig.fonts.body.split(', '),
         heading: brandConfig.fonts.heading.split(', '),
+        light: brandConfig.fonts.light.split(', '),
+        semibold: brandConfig.fonts.semibold.split(', '),
         mono: brandConfig.fonts.mono.split(', ')
       },
       fontSize: brandConfig.fontSize,

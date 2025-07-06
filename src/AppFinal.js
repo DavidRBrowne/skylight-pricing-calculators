@@ -78,10 +78,7 @@ const SonaCalculator = () => {
     smoove4: { name: "Smoove Origin 4 (4-channel)", price: 45 }
   };
 
-  const fabricColors = {
-    dimout: ['snow', 'tusk', 'chiffon', 'latte', 'umber', 'oyster', 'silver', 'ash', 'lead', 'midnight', 'steel', 'denim', 'coin', 'anchor', 'metal', 'linen', 'sand', 'night'],
-    blackout: ['snow', 'tusk', 'chiffon', 'latte', 'umber', 'oyster', 'silver', 'ash', 'lead', 'midnight', 'steel', 'denim', 'coin', 'anchor', 'metal', 'linen', 'sand', 'night']
-  };
+
 
   const hardwareOptions = {
     white: "White RAL9016",
@@ -106,121 +103,117 @@ const SonaCalculator = () => {
     return sortedValues.find(size => size >= value) || sortedValues[sortedValues.length - 1];
   };
 
-  const validateInputs = () => {
-    const newErrors = [];
-    const length = parseInt(recess.length);
-    const width = parseInt(recess.width);
 
-    if (!length || length < 500) {
-      newErrors.push("Minimum recess length is 500mm");
+
+
+
+  // Auto-update quote when any input changes
+  useEffect(() => {
+    // Only calculate if we have valid dimensions
+    if (recess.length && recess.width && parseInt(recess.length) >= 500 && parseInt(recess.width) >= 500) {
+      // Clear any previous errors
+      setErrors([]);
+      
+      const length = parseInt(recess.length);
+      const width = parseInt(recess.width);
+      
+      // Find next size up for pricing
+      const lengthKeys = Object.keys(dimoutPricing).map(Number);
+      const widthKeys = Object.keys(dimoutPricing[1000]).map(Number);
+      
+      const nearestLength = findNextSizeUp(length, lengthKeys);
+      const nearestWidth = findNextSizeUp(width, widthKeys);
+
+      // Get pricing
+      const pricingTable = fabricType === 'dimout' ? dimoutPricing : blackoutPricing;
+      const blindPrice = pricingTable[nearestLength][nearestWidth];
+      const sideTrimsPrice_calc = sideTrimsPrice[nearestLength][nearestWidth];
+      const powerPrice = powerOptions[powerSupply].price;
+      const handsetPrice = handsetOptions[handset].price;
+      const wallSwitchPrice = wallSwitchOptions[wallSwitch].price;
+
+      const subtotal = blindPrice + sideTrimsPrice_calc + powerPrice + handsetPrice + wallSwitchPrice;
+      const shipping = 25; // UK Courier Delivery
+      const buyPriceTotal = subtotal + shipping;
+      
+      // Calculate retail pricing - margin applied to total OBP (including delivery)
+      const retailTotal = Math.round(buyPriceTotal / (1 - margin / 100));
+      const retailTotalWithVAT = retailTotal * 1.2;
+      
+      // Round up to next nearest even number
+      const retailTotalIncVAT = Math.ceil(retailTotalWithVAT / 2) * 2;
+
+      setQuote({
+        recess: { length, width },
+        nearest: { length: nearestLength, width: nearestWidth },
+        fabric: { type: fabricType, color: fabricColor },
+        hardware: hardwareOptions[hardwareColor],
+        cordCount: getCordCount(width),
+        pricing: {
+          blind: blindPrice,
+          sideTrims: sideTrimsPrice_calc,
+          power: powerPrice,
+          handset: handsetPrice,
+          wallSwitch: wallSwitchPrice,
+          buySubtotal: subtotal,
+          shipping,
+          buyTotal: buyPriceTotal,
+          retailTotal,
+          retailTotalIncVAT,
+          margin
+        },
+        components: {
+          power: powerOptions[powerSupply].name,
+          handset: handsetOptions[handset].name,
+          wallSwitch: wallSwitchOptions[wallSwitch].name
+        }
+      });
+    } else {
+      // Clear quote if dimensions are invalid
+      setQuote(null);
     }
-    if (!width || width < 500) {
-      newErrors.push("Minimum recess width is 500mm");
-    }
-    if (length > 5000) {
-      newErrors.push("Maximum recess length is 5000mm");
-    }
-    if (width > 3000) {
-      newErrors.push("Maximum recess width is 3000mm");
-    }
-
-    setErrors(newErrors);
-    return newErrors.length === 0;
-  };
-
-  const calculateQuote = () => {
-    if (!validateInputs()) return;
-
-    const length = parseInt(recess.length);
-    const width = parseInt(recess.width);
-    
-    // Find next size up for pricing
-    const lengthKeys = Object.keys(dimoutPricing).map(Number);
-    const widthKeys = Object.keys(dimoutPricing[1000]).map(Number);
-    
-    const nearestLength = findNextSizeUp(length, lengthKeys);
-    const nearestWidth = findNextSizeUp(width, widthKeys);
-
-    // Get pricing
-    const pricingTable = fabricType === 'dimout' ? dimoutPricing : blackoutPricing;
-    const blindPrice = pricingTable[nearestLength][nearestWidth];
-    const sideTrimsPrice_calc = sideTrimsPrice[nearestLength][nearestWidth];
-    const powerPrice = powerOptions[powerSupply].price;
-    const handsetPrice = handsetOptions[handset].price;
-    const wallSwitchPrice = wallSwitchOptions[wallSwitch].price;
-
-    const subtotal = blindPrice + sideTrimsPrice_calc + powerPrice + handsetPrice + wallSwitchPrice;
-    const shipping = 25; // UK Courier Delivery
-    const buyPriceTotal = subtotal + shipping;
-    
-    // Calculate retail pricing - margin applied to total OBP (including delivery)
-    const retailTotal = Math.round(buyPriceTotal / (1 - margin / 100));
-    const retailTotalWithVAT = retailTotal * 1.2;
-    
-    // Round up to next nearest even number
-    const retailTotalIncVAT = Math.ceil(retailTotalWithVAT / 2) * 2;
-
-    setQuote({
-      recess: { length, width },
-      nearest: { length: nearestLength, width: nearestWidth },
-      fabric: { type: fabricType, color: fabricColor },
-      hardware: hardwareOptions[hardwareColor],
-      cordCount: getCordCount(width),
-      pricing: {
-        blind: blindPrice,
-        sideTrims: sideTrimsPrice_calc,
-        power: powerPrice,
-        handset: handsetPrice,
-        wallSwitch: wallSwitchPrice,
-        buySubtotal: subtotal,
-        shipping,
-        buyTotal: buyPriceTotal,
-        retailTotal,
-        retailTotalIncVAT,
-        margin
-      },
-      components: {
-        power: powerOptions[powerSupply].name,
-        handset: handsetOptions[handset].name,
-        wallSwitch: wallSwitchOptions[wallSwitch].name
-      }
-    });
-  };
-
-  // Auto-update quote when options change (but only if a quote already exists)
-useEffect(() => {
-  if (quote) {
-    calculateQuote();
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin]);
 
   return (
-    <div className="min-h-screen bg-gray-100" style={{ fontFamily: brandConfig.fonts.body }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" style={{ fontFamily: brandConfig.fonts.body }}>
       {/* Header with logo and title */}
-      <header className="flex items-center justify-between px-8 py-6 bg-white shadow-sm border-b border-gray-200">
-        <div className="flex items-center gap-4">
-          <img src={brandConfig.logo.src} alt={brandConfig.logo.alt} style={{ height: brandConfig.logo.height, width: brandConfig.logo.width }} />
-          <span className="text-2xl font-semibold tracking-tight" style={{ color: brandConfig.colors.teal, fontFamily: brandConfig.fonts.heading }}>🎉 NEW LAYOUT - Sona Sky Series - Skylight Blind Calculator 🎉</span>
+      <header className="bg-white shadow-lg border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <img src={brandConfig.logo.src} alt={brandConfig.logo.alt} style={{ height: brandConfig.logo.height, width: brandConfig.logo.width }} />
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight" style={{ color: brandConfig.colors.teal, fontFamily: brandConfig.fonts.semibold }}>
+                  Sona Sky Series
+                </h1>
+                <p className="text-lg text-gray-600 mt-1" style={{ fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <div className="text-right">
+                <p className="text-sm text-gray-500" style={{ fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
+                <p className="text-sm font-medium" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Professional Skylight Solutions</p>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Responsive grid layout */}
-      <main className="max-w-7xl mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Input Panel (Steps 1-5) */}
-          <section className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              {/* Progress indicator */}
-              <div className="flex items-center mb-8">
-                {[1,2,3,4,5].map(step => (
-                  <div key={step} className={`flex-1 h-2 rounded-full mx-1 ${step <= 5 ? 'bg-teal-600' : 'bg-gray-200'}`}></div>
-                ))}
-              </div>
+          <section className="xl:col-span-1">
+            <div className="bg-white rounded-3xl shadow-xl p-6 lg:p-8 border border-gray-100">
+
               
               {/* Step 1: Recess Dimensions */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>1. Recess Dimensions (mm)</h2>
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">1</div>
+                  <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Recess Dimensions</h3>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Length</label>
@@ -246,8 +239,11 @@ useEffect(() => {
               </div>
 
               {/* Step 2: Fabric Selection */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>2. Fabric Selection</h2>
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">2</div>
+                  <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Fabric Selection</h3>
+                </div>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Fabric Type</label>
@@ -307,8 +303,11 @@ useEffect(() => {
               </div>
 
               {/* Step 3: Hardware & Power */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>3. Hardware & Power</h2>
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">3</div>
+                  <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Hardware & Power</h3>
+                </div>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Hardware Color</label>
@@ -345,8 +344,11 @@ useEffect(() => {
               </div>
 
               {/* Step 4: Control Options */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>4. Control Options</h2>
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">4</div>
+                  <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Control Options</h3>
+                </div>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Handset</label>
@@ -378,28 +380,72 @@ useEffect(() => {
               </div>
 
               {/* Step 5: Retail Pricing Margin */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>5. Retail Pricing Margin</h2>
+              <div className="mb-4">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">5</div>
+                  <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Retail Pricing Margin</h3>
+                </div>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Margin Percentage</label>
-                  <input
-                    type="number"
-                    value={margin}
-                    onChange={(e) => setMargin(parseFloat(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="30"
-                  />
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="margin"
+                        value="50"
+                        checked={margin === 50}
+                        onChange={(e) => setMargin(parseFloat(e.target.value))}
+                        className="mr-2"
+                      />
+                      <span>50%</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="margin"
+                        value="56"
+                        checked={margin === 56}
+                        onChange={(e) => setMargin(parseFloat(e.target.value))}
+                        className="mr-2"
+                      />
+                      <span>56%</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="margin"
+                        value="60"
+                        checked={margin === 60}
+                        onChange={(e) => setMargin(parseFloat(e.target.value))}
+                        className="mr-2"
+                      />
+                      <span>60%</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="margin"
+                        value="65"
+                        checked={margin === 65}
+                        onChange={(e) => setMargin(parseFloat(e.target.value))}
+                        className="mr-2"
+                      />
+                      <span>65%</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              {/* Calculate Button */}
-              <button
-                onClick={calculateQuote}
-                className="w-full bg-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-teal-700 transition-colors"
-                style={{ backgroundColor: brandConfig.colors.teal }}
-              >
-                Calculate Quote
-              </button>
+              {/* Status Indicator */}
+              <div className={`w-full py-3 px-6 rounded-xl text-center text-sm font-medium transition-all duration-300 ${
+                recess.length && recess.width && parseInt(recess.length) >= 500 && parseInt(recess.width) >= 500 
+                  ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200" 
+                  : "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200"
+              }`}>
+                {recess.length && recess.width && parseInt(recess.length) >= 500 && parseInt(recess.width) >= 500 
+                  ? "✅ Quote updated automatically" 
+                  : "📝 Enter dimensions to see pricing"}
+              </div>
 
               {/* Error Display */}
               {errors.length > 0 && (
@@ -416,11 +462,14 @@ useEffect(() => {
           </section>
 
           {/* Output Cards */}
-          <section className="lg:col-span-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="xl:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Quote Summary Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Quote Summary</h2>
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center mr-3">📋</div>
+                  <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Quote Summary</h2>
+                </div>
                 
                 {quote ? (
                   <div className="space-y-3">
@@ -434,14 +483,17 @@ useEffect(() => {
                   </div>
                 ) : (
                   <div className="text-gray-500 text-center py-8">
-                    <p>Enter dimensions and click "Calculate Quote" to see pricing</p>
+                    <p>Enter dimensions to see pricing automatically</p>
                   </div>
                 )}
               </div>
 
               {/* Components Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Components</h2>
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center mr-3">⚙️</div>
+                  <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Components</h2>
+                </div>
                 
                 {quote ? (
                   <div className="space-y-2">
@@ -457,8 +509,11 @@ useEffect(() => {
               </div>
 
               {/* Buy Price Breakdown Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Buy Price Breakdown (OBP)</h2>
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center mr-3">💰</div>
+                  <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Buy Price Breakdown (OBP)</h2>
+                </div>
                 
                 {quote ? (
                   <div className="space-y-2">
@@ -474,14 +529,17 @@ useEffect(() => {
                   </div>
                 ) : (
                   <div className="text-gray-500 text-center py-8">
-                    <p>Calculate quote to see pricing breakdown</p>
+                    <p>Enter dimensions to see pricing breakdown</p>
                   </div>
                 )}
               </div>
 
               {/* Retail Pricing Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h2 className="text-xl font-semibold mb-4" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.heading }}>Retail Pricing (w/ {margin}% Margin)</h2>
+              <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <div className="flex items-center mb-6">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center mr-3">🏪</div>
+                  <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Retail Pricing (w/ {margin}% Margin)</h2>
+                </div>
                 
                 {quote ? (
                   <div className="space-y-2">
@@ -491,7 +549,7 @@ useEffect(() => {
                   </div>
                 ) : (
                   <div className="text-gray-500 text-center py-8">
-                    <p>Calculate quote to see retail pricing</p>
+                    <p>Enter dimensions to see retail pricing</p>
                   </div>
                 )}
               </div>

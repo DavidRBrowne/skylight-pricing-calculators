@@ -84,6 +84,11 @@ rm -rf node_modules/.cache
 3. Clear cache: `rm -rf node_modules/.cache`
 4. Kill processes: `lsof -ti:3000 | xargs kill -9`
 
+## 📋 Additional Documentation
+
+- **README.md**: Complete project documentation and setup instructions
+- **[MENTOR-SUMMARY.md](./MENTOR-SUMMARY.md)**: 300-word summary of today's development challenges and solutions for mentor/mastermind group
+
 ---
 
 **You're all set!** The calculator is working perfectly with a premium UI. Just test it and deploy to Vercel when you're ready. 

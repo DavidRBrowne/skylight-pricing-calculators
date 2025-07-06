@@ -127,6 +127,9 @@ npx serve -s build # Serve production build locally
 - **AppNew.js**: Intermediate development version
 - **AppTest.js**: Test file for debugging
 
+### 📋 Mentor Summary
+For a detailed account of today's development challenges and solutions, see [MENTOR-SUMMARY.md](./MENTOR-SUMMARY.md) - a 300-word summary covering Tailwind CSS version conflicts, PostCSS plugin migration, caching issues, and the layout transformation process.
+
 ### Key Commands Used
 ```bash
 # Install Tailwind CSS
