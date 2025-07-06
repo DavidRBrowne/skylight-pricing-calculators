@@ -236,18 +236,6 @@ const SonaCalculator = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Length</label>
-                    <input
-                      type="number"
-                      value={recess.length}
-                      onChange={(e) => setRecess({...recess, length: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="500-5000mm"
-                      min="500"
-                      max="5000"
-                    />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Width</label>
                     <input
                       type="number"
@@ -257,6 +245,18 @@ const SonaCalculator = () => {
                       placeholder="500-3000mm"
                       min="500"
                       max="3000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Length</label>
+                    <input
+                      type="number"
+                      value={recess.length}
+                      onChange={(e) => setRecess({...recess, length: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      placeholder="500-5000mm"
+                      min="500"
+                      max="5000"
                     />
                   </div>
                 </div>
