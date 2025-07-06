@@ -499,7 +499,7 @@ const SonaCalculator = () => {
                   <div className="space-y-3">
                     <div>
                       <h3 className="font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Specifications</h3>
-                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess:</span> {quote.recess.length}mm × {quote.recess.width}mm</p>
+                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess:</span> {quote.recess.width}mm × {quote.recess.length}mm</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Fabric:</span> {quote.fabric.type} - {quote.fabric.color}</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Hardware:</span> {quote.hardware}</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>
