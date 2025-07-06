@@ -53,7 +53,7 @@ skylight-calculators/
 ### ✅ Working Features
 - **Responsive Grid Layout**: Input panel (left) + Output cards (right)
 - **Tailwind CSS Styling**: Premium design with proper shadows and spacing
-- **Brand Integration**: Scottish Shutter Company colors and fonts
+- **Brand Integration**: Scottish Shutter Company colors, fonts, and official logo
 - **Pricing Logic**: Complete calculation engine for skylight blinds
 - **Form Validation**: Input validation with error handling
 - **Auto-update**: Quote updates automatically when options change
@@ -171,3 +171,4 @@ For questions or issues:
 **Last Updated**: July 4, 2025
 **Status**: ✅ Ready for team use
 **Next Session**: Test functionality and deploy to Vercel
+**Branding**: Official SSC logo is now integrated and visible in the header.

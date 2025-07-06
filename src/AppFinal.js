@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import brandConfig from './brand-config';
-
+import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square copy.png';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
   // State management
@@ -176,23 +176,23 @@ const SonaCalculator = () => {
   }, [recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" style={{ fontFamily: brandConfig.fonts.body }}>
+    <div className="min-h-screen" style={{ backgroundColor: brandConfig.colors.lightGrey, color: brandConfig.colors.black, fontFamily: brandConfig.fonts.body }}>
       {/* Header with logo and title */}
       <header className="bg-white shadow-lg border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <img src={brandConfig.logo.src} alt={brandConfig.logo.alt} style={{ height: brandConfig.logo.height, width: brandConfig.logo.width }} />
+            <img src={sscLogoPng} alt="Scottish Shutter Company Logo" style={{ height: '48px', width: 'auto', borderRadius: '8px' }} />
               <div>
                 <h1 className="text-3xl font-bold tracking-tight" style={{ color: brandConfig.colors.teal, fontFamily: brandConfig.fonts.semibold }}>
                   Sona Sky Series
                 </h1>
-                <p className="text-lg text-gray-600 mt-1" style={{ fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
+                <p className="text-lg mt-1" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
               </div>
             </div>
             <div className="hidden md:block">
               <div className="text-right">
-                <p className="text-sm text-gray-500" style={{ fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
+                <p className="text-sm" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
                 <p className="text-sm font-medium" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Professional Skylight Solutions</p>
               </div>
             </div>

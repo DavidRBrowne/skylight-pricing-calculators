@@ -43,6 +43,7 @@ npm start
 ### 3. Add Logo
 - Replace placeholder with actual SSC logo
 - Update `src/brand-config.js` logo path
++ Official SSC logo is now in use and visible in the header
 
 ### 4. Test Responsive Design
 - Test on mobile/tablet
