@@ -7,8 +7,8 @@
 ### What's Working
 - ✅ **Responsive Grid Layout**: Input panel (left) + Output cards (right)
 - ✅ **Tailwind CSS**: v3.4.0 properly configured and loading
-- ✅ **Background**: Light gray (`bg-gray-100`) with white cards
-- ✅ **Brand Integration**: Scottish Shutter Company colors and fonts
+- ✅ **Background**: Brand light grey (#C6C6BC) with white cards and black text
+- ✅ **Brand Integration**: Scottish Shutter Company colors, fonts, and official PNG logo
 - ✅ **Pricing Logic**: Complete calculation engine working
 - ✅ **Form Validation**: Input validation with error handling
 - ✅ **Auto-update**: Quote updates automatically when options change
@@ -39,11 +39,12 @@ npm start
 - Push to GitHub (✅ Done)
 - Connect to Vercel
 - Deploy for team access
+- ✅ **Live on Vercel**: https://skylight-pricing-calculators.vercel.app/
 
 ### 3. Add Logo
 - Replace placeholder with actual SSC logo
 - Update `src/brand-config.js` logo path
-+ Official SSC logo is now in use and visible in the header
++ ✅ Official PNG logo integrated and working
 
 ### 4. Test Responsive Design
 - Test on mobile/tablet
@@ -70,7 +71,7 @@ rm -rf node_modules/.cache
 - **Header**: Logo placeholder + "Sona Sky Series Calculator"
 - **Input Panel**: 5-step process on the left
 - **Output Cards**: 4 white cards in 2x2 grid on the right
-- **Background**: Light gray (not white anymore)
+- **Background**: Brand light grey with black text
 - **Styling**: Premium shadows, rounded corners, proper spacing
 
 ## ⚠️ Minor Issues
@@ -92,4 +93,4 @@ rm -rf node_modules/.cache
 
 ---
 
-**You're all set!** The calculator is working perfectly with a premium UI. Just test it and deploy to Vercel when you're ready. 
+**You're all set!** The calculator is working perfectly with a premium UI and is live on Vercel for your team to use. 

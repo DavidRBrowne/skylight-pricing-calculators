@@ -7,7 +7,7 @@ A premium React-based pricing calculator for The Scottish Shutter Company's skyl
 **Current State**: ✅ **FUNCTIONAL** - Premium UI with Tailwind CSS working
 - **Layout**: Responsive grid design with input panel and output cards
 - **Styling**: Tailwind CSS v3.4.0 properly configured
-- **Background**: Light gray (`bg-gray-100`) with white cards
+- **Background**: Brand light grey (#C6C6BC) with white cards and black text
 - **Functionality**: All pricing logic and calculations working
 
 ## 🚀 Quick Start
@@ -53,13 +53,13 @@ skylight-calculators/
 ### ✅ Working Features
 - **Responsive Grid Layout**: Input panel (left) + Output cards (right)
 - **Tailwind CSS Styling**: Premium design with proper shadows and spacing
-- **Brand Integration**: Scottish Shutter Company colors, fonts, and official logo
+- **Brand Integration**: Scottish Shutter Company colors, fonts, and official PNG logo
 - **Pricing Logic**: Complete calculation engine for skylight blinds
 - **Form Validation**: Input validation with error handling
 - **Auto-update**: Quote updates automatically when options change
 
 ### 🎯 Layout Structure
-- **Header**: Logo placeholder + "Sona Sky Series Calculator"
+- **Header**: Official SSC logo + "Sona Sky Series Calculator"
 - **Input Panel**: 5-step process with progress indicator
 - **Output Cards**: 4 cards in 2x2 grid showing:
   - Quote Summary
@@ -85,7 +85,7 @@ skylight-calculators/
 ### ✅ Resolved
 - ~~Tailwind CSS not loading~~ → Fixed with v3.4.0
 - ~~PostCSS configuration errors~~ → Fixed with proper plugin setup
-- ~~White background issue~~ → Fixed with `bg-gray-100`
+- ~~White background issue~~ → Fixed with brand light grey background
 
 ### ⚠️ Minor Issues
 - ESLint warning: `fabricColors` variable unused (line 81 in AppFinal.js)
@@ -95,9 +95,7 @@ skylight-calculators/
 
 ### Immediate (When You Return)
 1. **Test the calculator**: Enter dimensions and verify calculations
-2. **Add logo**: Replace placeholder with actual SSC logo
-3. **Deploy to Vercel**: For team access
-4. **Test responsive design**: Mobile/tablet layouts
+2. **Deploy to Vercel**: ✅ Completed - Live at https://skylight-pricing-calculators.vercel.app/
 
 ### Future Enhancements
 - Add fabric color swatches
@@ -172,3 +170,4 @@ For questions or issues:
 **Status**: ✅ Ready for team use
 **Next Session**: Test functionality and deploy to Vercel
 **Branding**: Official SSC logo is now integrated and visible in the header.
+**Deployment**: ✅ Live on Vercel - https://skylight-pricing-calculators.vercel.app/
