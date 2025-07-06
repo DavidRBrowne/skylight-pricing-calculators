@@ -109,13 +109,33 @@ const SonaCalculator = () => {
 
   // Auto-update quote when any input changes
   useEffect(() => {
+    // Clear any previous errors
+    setErrors([]);
+    
     // Only calculate if we have valid dimensions
-    if (recess.length && recess.width && parseInt(recess.length) >= 500 && parseInt(recess.width) >= 500) {
-      // Clear any previous errors
-      setErrors([]);
-      
+    if (recess.length && recess.width) {
       const length = parseInt(recess.length);
       const width = parseInt(recess.width);
+      
+      // Validate minimum dimensions
+      if (length < 500 || width < 500) {
+        setErrors(['Both length and width must be at least 500mm']);
+        setQuote(null);
+        return;
+      }
+      
+      // Validate maximum dimensions
+      if (length > 5000) {
+        setErrors(['Length cannot exceed 5000mm (5m)']);
+        setQuote(null);
+        return;
+      }
+      
+      if (width > 3000) {
+        setErrors(['Width cannot exceed 3000mm (3m)']);
+        setQuote(null);
+        return;
+      }
       
       // Find next size up for pricing
       const lengthKeys = Object.keys(dimoutPricing).map(Number);
@@ -222,7 +242,9 @@ const SonaCalculator = () => {
                       value={recess.length}
                       onChange={(e) => setRecess({...recess, length: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="1000"
+                      placeholder="500-5000mm"
+                      min="500"
+                      max="5000"
                     />
                   </div>
                   <div>
@@ -232,7 +254,9 @@ const SonaCalculator = () => {
                       value={recess.width}
                       onChange={(e) => setRecess({...recess, width: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="1000"
+                      placeholder="500-3000mm"
+                      min="500"
+                      max="3000"
                     />
                   </div>
                 </div>
