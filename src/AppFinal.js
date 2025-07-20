@@ -57,6 +57,7 @@ const SonaCalculator = () => {
     solar: { name: "Solar Pack", price: 72 },
     adapter: { name: "12v Mains Adapter", price: 18 },
     battery: { name: "Li-on USB-C Battery", price: 38 },
+    batteryCharger: { name: "Li-on USB-C Battery plus charger", price: 52 },
     charger: { name: "Li-on USB-C Battery Charger", price: 14 },
     sna45: { name: "SNA-45-12 Mains Transformer", price: 38 },
     sna100: { name: "SNA-100-12 Mains Transformer", price: 63 },
@@ -357,6 +358,7 @@ const SonaCalculator = () => {
                       <option value="solar">Solar Pack (£72)</option>
                       <option value="adapter">12v Mains Adapter (£18)</option>
                       <option value="battery">Li-on USB-C Battery (£38)</option>
+                      <option value="batteryCharger">Li-on USB-C Battery plus charger (£52)</option>
                       <option value="charger">Li-on USB-C Battery Charger (£14)</option>
                       <option value="sna45">SNA-45-12 Mains Transformer (£38)</option>
                       <option value="sna100">SNA-100-12 Mains Transformer (£63)</option>
