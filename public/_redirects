@@ -1,0 +1,11 @@
+# Security redirects
+/api/* /404 404
+/admin/* /404 404
+/.env /404 404
+/config/* /404 404
+
+# Force HTTPS
+http://skylight-pricing-calculators.vercel.app/* https://skylight-pricing-calculators.vercel.app/:splat 301!
+
+# Version locked - no updates allowed
+/version-check /404 404

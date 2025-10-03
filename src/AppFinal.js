@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import brandConfig from './brand-config';
 import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square copy.png';
 import packageJson from '../package.json';
+import securityConfig from '../security-config';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
   // State management
@@ -109,6 +110,21 @@ const SonaCalculator = () => {
 
 
 
+  // Security validation function
+  const validateSecurity = (value, type) => {
+    if (!securityConfig.validateInput(value, type)) {
+      return false;
+    }
+    
+    // Check rate limiting
+    if (!securityMiddleware.checkRateLimit('input-validation')) {
+      setErrors(['Too many requests. Please wait a moment.']);
+      return false;
+    }
+    
+    return true;
+  };
+
   // Auto-update quote when any input changes
   useEffect(() => {
     // Clear any previous errors
@@ -116,24 +132,30 @@ const SonaCalculator = () => {
     
     // Only calculate if we have valid dimensions
     if (recess.length && recess.width) {
-      const length = parseInt(recess.length);
-      const width = parseInt(recess.width);
+      // Security validation
+      if (!validateSecurity(recess.length, 'dimension') || !validateSecurity(recess.width, 'dimension')) {
+        setQuote(null);
+        return;
+      }
+      
+      const length = parseInt(securityConfig.sanitizeInput(recess.length));
+      const width = parseInt(securityConfig.sanitizeInput(recess.width));
       
       // Validate minimum dimensions
-      if (length < 500 || width < 500) {
+      if (length < securityConfig.security.minDimensions.length || width < securityConfig.security.minDimensions.width) {
         setErrors(['Both length and width must be at least 500mm']);
         setQuote(null);
         return;
       }
       
       // Validate maximum dimensions
-      if (length > 5000) {
+      if (length > securityConfig.security.maxDimensions.length) {
         setErrors(['Length cannot exceed 5000mm (5m)']);
         setQuote(null);
         return;
       }
       
-      if (width > 3000) {
+      if (width > securityConfig.security.maxDimensions.width) {
         setErrors(['Width cannot exceed 3000mm (3m)']);
         setQuote(null);
         return;
@@ -211,7 +233,7 @@ const SonaCalculator = () => {
                 </h1>
                 <p className="text-lg mt-1" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
                 <div className="md:hidden mt-2">
-                  <p className="text-xs" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company - v{packageJson.version}</p>
+                  <p className="text-xs" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company - v{securityConfig.version} 🔒</p>
                 </div>
               </div>
             </div>
@@ -219,7 +241,7 @@ const SonaCalculator = () => {
               <div className="text-right">
                 <p className="text-sm" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
                 <p className="text-sm font-medium" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Professional Skylight Solutions</p>
-                <p className="text-xs mt-1" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>v{packageJson.version}</p>
+                <p className="text-xs mt-1" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>v{securityConfig.version} 🔒</p>
               </div>
             </div>
           </div>
@@ -246,11 +268,17 @@ const SonaCalculator = () => {
                     <input
                       type="number"
                       value={recess.width}
-                      onChange={(e) => setRecess({...recess, width: e.target.value})}
+                      onChange={(e) => {
+                        const sanitizedValue = securityConfig.sanitizeInput(e.target.value);
+                        if (securityConfig.validateInput(sanitizedValue, 'dimension')) {
+                          setRecess({...recess, width: sanitizedValue});
+                        }
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       placeholder="500-3000mm"
                       min="500"
                       max="3000"
+                      maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
                   <div>
@@ -258,11 +286,17 @@ const SonaCalculator = () => {
                     <input
                       type="number"
                       value={recess.length}
-                      onChange={(e) => setRecess({...recess, length: e.target.value})}
+                      onChange={(e) => {
+                        const sanitizedValue = securityConfig.sanitizeInput(e.target.value);
+                        if (securityConfig.validateInput(sanitizedValue, 'dimension')) {
+                          setRecess({...recess, length: sanitizedValue});
+                        }
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       placeholder="500-5000mm"
                       min="500"
                       max="5000"
+                      maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
                 </div>
