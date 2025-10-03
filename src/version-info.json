@@ -1,11 +1,11 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.1",
   "timestamp": "2025-10-03T15:38:19.608Z",
   "gitCommit": "f350c9f",
   "gitBranch": "main",
   "lastDeployment": {
-    "url": "https://skylight-pricing-calculators-lx0z84lr4-david-brownes-projects.vercel.app",
-    "timestamp": "2025-10-03T15:48:35.286Z",
+    "url": "https://skylight-pricing-calculators-4w5btnzk9-david-brownes-projects.vercel.app",
+    "timestamp": "2025-10-03T16:17:19.379Z",
     "status": "success"
   }
 }

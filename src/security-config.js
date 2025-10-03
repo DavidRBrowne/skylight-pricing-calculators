@@ -3,9 +3,9 @@
 
 export const securityConfig = {
   // Version lock
-  version: '1.0.1',
-  locked: true,
-  allowUpdates: false,
+  version: '1.1.0',
+  locked: false,
+  allowUpdates: true,
   
   // Security settings
   security: {
@@ -63,7 +63,7 @@ export const securityConfig = {
   // Sanitization
   sanitizeInput: (input) => {
     if (typeof input !== 'string') return '';
-    return input.replace(/[<>\"'&]/g, '');
+    return input.replace(/[<>"'&]/g, '');
   },
   
   // Security headers

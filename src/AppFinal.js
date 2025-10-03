@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import brandConfig from './brand-config';
 import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square copy.png';
-import packageJson from '../package.json';
-import securityConfig from '../security-config';
+// import packageJson from '../package.json'; // Removed - using securityConfig.version instead
+import securityConfig, { securityMiddleware } from './security-config';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
   // State management
+  const [systemType, setSystemType] = useState('single'); // 'single', 'duo-inward', 'duo-parallel'
   const [recess, setRecess] = useState({ length: '', width: '' });
   const [fabricType, setFabricType] = useState('dimout');
   const [fabricColor, setFabricColor] = useState('snow');
@@ -14,6 +15,8 @@ const SonaCalculator = () => {
   const [handset, setHandset] = useState('none');
   const [wallSwitch, setWallSwitch] = useState('none');
   const [margin, setMargin] = useState(50);
+  const [sideTrims, setSideTrims] = useState(false);
+  const [tBarColor, setTBarColor] = useState('white');
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
 
@@ -42,7 +45,8 @@ const SonaCalculator = () => {
     5000: { 1000: 895, 1200: 908, 1400: 920, 1600: 932, 1800: 944, 2000: 956, 2200: 968, 2400: 980, 2600: 992, 2800: 1004, 3000: 1016 }
   };
 
-  const sideTrimsPrice = {
+  // Side Trims pricing table (from product sheet)
+  const sideTrimsPricing = {
     1000: { 1000: 48, 1200: 53, 1400: 58, 1600: 62, 1800: 67, 2000: 72, 2200: 77, 2400: 82, 2600: 86, 2800: 91, 3000: 96 },
     1500: { 1000: 60, 1200: 65, 1400: 70, 1600: 74, 1800: 79, 2000: 84, 2200: 89, 2400: 94, 2600: 98, 2800: 103, 3000: 108 },
     2000: { 1000: 72, 1200: 77, 1400: 82, 1600: 86, 1800: 91, 2000: 96, 2200: 101, 2400: 106, 2600: 110, 2800: 115, 3000: 120 },
@@ -91,6 +95,13 @@ const SonaCalculator = () => {
     bespoke: "Bespoke RAL (POA)"
   };
 
+  const tBarColorOptions = {
+    white: "White RAL9016",
+    grey: "Grey RAL7040", 
+    anthracite: "Anthracite RAL7016",
+    black: "Black RAL9005"
+  };
+
   // Helper functions
   const getCordCount = (width) => {
     if (width < 700) return { total: 4, spooling: 2, support: 2 };
@@ -125,6 +136,24 @@ const SonaCalculator = () => {
     return true;
   };
 
+  // Calculate individual blind dimensions for Duo systems
+  const calculateBlindDimensions = (totalLength, totalWidth, systemType) => {
+    if (systemType === 'duo-inward') {
+      // For inward: two blinds meet in center, each half the total length
+      return {
+        blind1: { length: totalLength / 2, width: totalWidth },
+        blind2: { length: totalLength / 2, width: totalWidth }
+      };
+    } else if (systemType === 'duo-parallel') {
+      // For parallel: two blinds side by side, each half the total width
+      return {
+        blind1: { length: totalLength, width: totalWidth / 2 },
+        blind2: { length: totalLength, width: totalWidth / 2 }
+      };
+    }
+    return null;
+  };
+
   // Auto-update quote when any input changes
   useEffect(() => {
     // Clear any previous errors
@@ -138,45 +167,86 @@ const SonaCalculator = () => {
         return;
       }
       
-      const length = parseInt(securityConfig.sanitizeInput(recess.length));
-      const width = parseInt(securityConfig.sanitizeInput(recess.width));
+      const totalLength = parseInt(securityConfig.sanitizeInput(recess.length));
+      const totalWidth = parseInt(securityConfig.sanitizeInput(recess.width));
+      
+      // Validate dimensions based on system type
+      let maxLength, maxWidth, minLength, minWidth;
+      
+      if (systemType === 'single') {
+        maxLength = 5000; maxWidth = 3000; minLength = 500; minWidth = 500;
+      } else if (systemType === 'duo-inward') {
+        maxLength = 10000; maxWidth = 3000; minLength = 1000; minWidth = 500;
+      } else if (systemType === 'duo-parallel') {
+        maxLength = 5000; maxWidth = 6000; minLength = 500; minWidth = 1000;
+      }
       
       // Validate minimum dimensions
-      if (length < securityConfig.security.minDimensions.length || width < securityConfig.security.minDimensions.width) {
-        setErrors(['Both length and width must be at least 500mm']);
+      if (totalLength < minLength || totalWidth < minWidth) {
+        setErrors([`Dimensions must be at least ${minWidth}mm × ${minLength}mm`]);
         setQuote(null);
         return;
       }
       
       // Validate maximum dimensions
-      if (length > securityConfig.security.maxDimensions.length) {
-        setErrors(['Length cannot exceed 5000mm (5m)']);
+      if (totalLength > maxLength || totalWidth > maxWidth) {
+        setErrors([`Dimensions cannot exceed ${maxWidth}mm × ${maxLength}mm`]);
         setQuote(null);
         return;
       }
-      
-      if (width > securityConfig.security.maxDimensions.width) {
-        setErrors(['Width cannot exceed 3000mm (3m)']);
-        setQuote(null);
-        return;
+
+      // Calculate blind dimensions
+      let blind1, blind2;
+      if (systemType === 'single') {
+        blind1 = { length: totalLength, width: totalWidth };
+        blind2 = null;
+      } else {
+        const blindDims = calculateBlindDimensions(totalLength, totalWidth, systemType);
+        blind1 = blindDims.blind1;
+        blind2 = blindDims.blind2;
+        
+        // Validate individual blind minimums
+        if (blind1.length < 500 || blind1.width < 500 || blind2.length < 500 || blind2.width < 500) {
+          setErrors(['Individual blinds must be at least 500mm × 500mm']);
+          setQuote(null);
+          return;
+        }
       }
-      
+
       // Find next size up for pricing
       const lengthKeys = Object.keys(dimoutPricing).map(Number);
       const widthKeys = Object.keys(dimoutPricing[1000]).map(Number);
       
-      const nearestLength = findNextSizeUp(length, lengthKeys);
-      const nearestWidth = findNextSizeUp(width, widthKeys);
+      const nearestLength1 = findNextSizeUp(blind1.length, lengthKeys);
+      const nearestWidth1 = findNextSizeUp(blind1.width, widthKeys);
+      
+      let nearestLength2, nearestWidth2;
+      if (blind2) {
+        nearestLength2 = findNextSizeUp(blind2.length, lengthKeys);
+        nearestWidth2 = findNextSizeUp(blind2.width, widthKeys);
+      }
 
       // Get pricing
       const pricingTable = fabricType === 'dimout' ? dimoutPricing : blackoutPricing;
-      const blindPrice = pricingTable[nearestLength][nearestWidth];
-      const sideTrimsPrice_calc = sideTrimsPrice[nearestLength][nearestWidth];
+      const blind1Price = pricingTable[nearestLength1][nearestWidth1];
+      const blind2Price = blind2 ? pricingTable[nearestLength2][nearestWidth2] : 0;
+      
+      // Calculate Side Trims price
+      let sideTrimsPrice_calc = 0;
+      if (systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims)) {
+        // For Duo systems, calculate Side Trims based on total dimensions
+        const sideTrimsLength = findNextSizeUp(totalLength, lengthKeys);
+        const sideTrimsWidth = findNextSizeUp(totalWidth, widthKeys);
+        sideTrimsPrice_calc = sideTrimsPricing[sideTrimsLength][sideTrimsWidth];
+      } else if (systemType === 'single') {
+        sideTrimsPrice_calc = sideTrimsPricing[nearestLength1][nearestWidth1];
+      }
+      
       const powerPrice = powerOptions[powerSupply].price;
       const handsetPrice = handsetOptions[handset].price;
       const wallSwitchPrice = wallSwitchOptions[wallSwitch].price;
 
-      const subtotal = blindPrice + sideTrimsPrice_calc + powerPrice + handsetPrice + wallSwitchPrice;
+      const subtotal = blind1Price + blind2Price + sideTrimsPrice_calc + powerPrice + handsetPrice + wallSwitchPrice;
       const shipping = 25; // UK Courier Delivery
       const buyPriceTotal = subtotal + shipping;
       
@@ -188,13 +258,28 @@ const SonaCalculator = () => {
       const retailTotalIncVAT = Math.ceil(retailTotalWithVAT / 2) * 2;
 
       setQuote({
-        recess: { length, width },
-        nearest: { length: nearestLength, width: nearestWidth },
+        systemType,
+        totalRecess: { length: totalLength, width: totalWidth },
+        blind1: {
+          dimensions: blind1,
+          nearest: { length: nearestLength1, width: nearestWidth1 },
+          price: blind1Price
+        },
+        blind2: blind2 ? {
+          dimensions: blind2,
+          nearest: { length: nearestLength2, width: nearestWidth2 },
+          price: blind2Price
+        } : null,
         fabric: { type: fabricType, color: fabricColor },
         hardware: hardwareOptions[hardwareColor],
-        cordCount: getCordCount(width),
+        tBar: systemType !== 'single' && (systemType === 'duo-inward' || sideTrims) ? {
+          required: systemType === 'duo-inward',
+          color: tBarColorOptions[tBarColor]
+        } : null,
+        cordCount: getCordCount(totalWidth),
         pricing: {
-          blind: blindPrice,
+          blind1: blind1Price,
+          blind2: blind2Price,
           sideTrims: sideTrimsPrice_calc,
           power: powerPrice,
           handset: handsetPrice,
@@ -217,7 +302,7 @@ const SonaCalculator = () => {
       setQuote(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin]);
+  }, [systemType, recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin, sideTrims, tBarColor]);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: brandConfig.colors.lightGrey, color: brandConfig.colors.black, fontFamily: brandConfig.fonts.body }}>
@@ -233,7 +318,7 @@ const SonaCalculator = () => {
                 </h1>
                 <p className="text-lg mt-1" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
                 <div className="md:hidden mt-2">
-                  <p className="text-xs" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company - v{securityConfig.version} 🔒</p>
+                  <p className="text-xs" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company - v{securityConfig.version}</p>
                 </div>
               </div>
             </div>
@@ -241,15 +326,66 @@ const SonaCalculator = () => {
               <div className="text-right">
                 <p className="text-sm" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
                 <p className="text-sm font-medium" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Professional Skylight Solutions</p>
-                <p className="text-xs mt-1" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>v{securityConfig.version} 🔒</p>
+                <p className="text-xs mt-1" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>v{securityConfig.version}</p>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Responsive grid layout */}
+      {/* System Type Selection */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
+        <div className="bg-white rounded-3xl shadow-xl p-6 lg:p-8 border border-gray-100 mb-6">
+          <div className="flex items-center mb-4">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">🏗️</div>
+            <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>System Type</h3>
+          </div>
+          <div className="space-y-3">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="systemType"
+                value="single"
+                checked={systemType === 'single'}
+                onChange={(e) => setSystemType(e.target.value)}
+                className="mr-3"
+              />
+              <div>
+                <span className="font-medium">Single SonaSky Blind</span>
+                <p className="text-sm text-gray-600">Standard single blind system (Max: 3000mm × 5000mm)</p>
+              </div>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="systemType"
+                value="duo-inward"
+                checked={systemType === 'duo-inward'}
+                onChange={(e) => setSystemType(e.target.value)}
+                className="mr-3"
+              />
+              <div>
+                <span className="font-medium">SonaSky Duo - Inward Configuration</span>
+                <p className="text-sm text-gray-600">Two blinds meet in center (Max: 3000mm × 10000mm) - T-Bar required</p>
+              </div>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="systemType"
+                value="duo-parallel"
+                checked={systemType === 'duo-parallel'}
+                onChange={(e) => setSystemType(e.target.value)}
+                className="mr-3"
+              />
+              <div>
+                <span className="font-medium">SonaSky Duo - Parallel Configuration</span>
+                <p className="text-sm text-gray-600">Two blinds run side-by-side (Max: 6000mm × 5000mm) - T-Bar optional</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Input Panel (Steps 1-5) */}
           <section className="xl:col-span-1">
@@ -264,7 +400,9 @@ const SonaCalculator = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Width</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>
+                      {systemType === 'single' ? 'Width' : 'Total Opening Width'}
+                    </label>
                     <input
                       type="number"
                       value={recess.width}
@@ -275,14 +413,16 @@ const SonaCalculator = () => {
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="500-3000mm"
+                      placeholder={systemType === 'duo-parallel' ? '500-6000mm' : '500-3000mm'}
                       min="500"
-                      max="3000"
+                      max={systemType === 'duo-parallel' ? '6000' : '3000'}
                       maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Length</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>
+                      {systemType === 'single' ? 'Length' : 'Total Opening Length'}
+                    </label>
                     <input
                       type="number"
                       value={recess.length}
@@ -293,9 +433,9 @@ const SonaCalculator = () => {
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="500-5000mm"
-                      min="500"
-                      max="5000"
+                      placeholder={systemType === 'duo-inward' ? '1000-10000mm' : '500-5000mm'}
+                      min={systemType === 'duo-inward' ? '1000' : '500'}
+                      max={systemType === 'duo-inward' ? '10000' : '5000'}
                       maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
@@ -444,10 +584,60 @@ const SonaCalculator = () => {
                 </div>
               </div>
 
-              {/* Step 5: Retail Pricing Margin */}
+              {/* Step 5: Side Trims & T-Bar (Duo Systems) */}
+              {(systemType === 'duo-inward' || systemType === 'duo-parallel') && (
+                <div className="mb-6">
+                  <div className="flex items-center mb-4">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">5</div>
+                    <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Side Trims & T-Bar</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {systemType === 'duo-inward' && (
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                          <strong>Inward Configuration:</strong> Side Trims and T-Bar are required for operation.
+                        </p>
+                      </div>
+                    )}
+                    {systemType === 'duo-parallel' && (
+                      <div>
+                        <label className="flex items-center mb-3">
+                          <input
+                            type="checkbox"
+                            checked={sideTrims}
+                            onChange={(e) => setSideTrims(e.target.checked)}
+                            className="mr-2"
+                          />
+                          <span className="font-medium">Include Side Trims & T-Bar (Optional - Aesthetic only)</span>
+                        </label>
+                        <p className="text-sm text-gray-600 ml-6">
+                          Side Trims include 4 lengths of 25mm × 25mm aluminium trim with T-Bar included.
+                        </p>
+                      </div>
+                    )}
+                    {(systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims)) && (
+                      <div>
+                        <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>T-Bar Color</label>
+                        <select
+                          value={tBarColor}
+                          onChange={(e) => setTBarColor(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        >
+                          <option value="white">White RAL9016</option>
+                          <option value="grey">Grey RAL7040</option>
+                          <option value="anthracite">Anthracite RAL7016</option>
+                          <option value="black">Black RAL9005</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 6: Retail Pricing Margin */}
               <div className="mb-4">
                 <div className="flex items-center mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">5</div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">{systemType === 'single' ? '5' : '6'}</div>
                   <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Retail Pricing Margin</h3>
                 </div>
                 <div>
@@ -539,10 +729,30 @@ const SonaCalculator = () => {
                 {quote ? (
                   <div className="space-y-3">
                     <div>
-                      <h3 className="font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Specifications</h3>
-                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess:</span> {quote.recess.width}mm × {quote.recess.length}mm</p>
+                      <h3 className="font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>System Configuration</h3>
+                      <p style={{ color: brandConfig.colors.black }}>
+                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>
+                          {quote.systemType === 'single' ? 'Single Blind:' : 'Total Opening:'}
+                        </span> {quote.totalRecess.width}mm × {quote.totalRecess.length}mm
+                      </p>
+                      
+                      {quote.blind2 && (
+                        <div className="mt-2 p-2 bg-gray-50 rounded">
+                          <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind 1:</span> {quote.blind1.dimensions.width}mm × {quote.blind1.dimensions.length}mm</p>
+                          <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind 2:</span> {quote.blind2.dimensions.width}mm × {quote.blind2.dimensions.length}mm</p>
+                        </div>
+                      )}
+                      
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Fabric:</span> {quote.fabric.type} - {quote.fabric.color}</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Hardware:</span> {quote.hardware}</p>
+                      
+                      {quote.tBar && (
+                        <p style={{ color: brandConfig.colors.black }}>
+                          <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>T-Bar:</span> {quote.tBar.color}
+                          {quote.tBar.required && <span className="text-sm text-blue-600"> (Required)</span>}
+                        </p>
+                      )}
+                      
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>
                     </div>
                   </div>
@@ -582,8 +792,16 @@ const SonaCalculator = () => {
                 
                 {quote ? (
                   <div className="space-y-2">
-                    <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind:</span> £{quote.pricing.blind}</p>
-                    <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Side Trims:</span> £{quote.pricing.sideTrims}</p>
+                    <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind 1:</span> £{quote.pricing.blind1}</p>
+                    {quote.pricing.blind2 > 0 && (
+                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind 2:</span> £{quote.pricing.blind2}</p>
+                    )}
+                    {quote.pricing.sideTrims > 0 && (
+                      <p style={{ color: brandConfig.colors.black }}>
+                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Side Trims & T-Bar:</span> £{quote.pricing.sideTrims}
+                        {quote.tBar && <span className="text-xs text-gray-600 ml-1">({quote.tBar.color})</span>}
+                      </p>
+                    )}
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power:</span> £{quote.pricing.power}</p>
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Handset:</span> £{quote.pricing.handset}</p>
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch:</span> £{quote.pricing.wallSwitch}</p>
