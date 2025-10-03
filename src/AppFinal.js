@@ -161,14 +161,14 @@ const SonaCalculator = () => {
     
     // Only calculate if we have valid dimensions
     if (recess.length && recess.width) {
-      // Security validation
-      if (!validateSecurity(recess.length, 'dimension') || !validateSecurity(recess.width, 'dimension')) {
+      const totalLength = parseInt(recess.length);
+      const totalWidth = parseInt(recess.width);
+      
+      // Check if dimensions are valid numbers
+      if (isNaN(totalLength) || isNaN(totalWidth)) {
         setQuote(null);
         return;
       }
-      
-      const totalLength = parseInt(securityConfig.sanitizeInput(recess.length));
-      const totalWidth = parseInt(securityConfig.sanitizeInput(recess.width));
       
       // Validate dimensions based on system type
       let maxLength, maxWidth, minLength, minWidth;
@@ -407,9 +407,19 @@ const SonaCalculator = () => {
                       type="number"
                       value={recess.width}
                       onChange={(e) => {
-                        const sanitizedValue = securityConfig.sanitizeInput(e.target.value);
-                        if (securityConfig.validateInput(sanitizedValue, 'dimension')) {
-                          setRecess({...recess, width: sanitizedValue});
+                        const value = e.target.value;
+                        // Allow empty string and partial numbers during typing
+                        if (value === '' || /^[0-9]*$/.test(value)) {
+                          setRecess({...recess, width: value});
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // Final validation on blur
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 500 && value <= (systemType === 'duo-parallel' ? 6000 : 3000)) {
+                          setRecess({...recess, width: value.toString()});
+                        } else if (e.target.value === '') {
+                          setRecess({...recess, width: ''});
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
@@ -427,9 +437,21 @@ const SonaCalculator = () => {
                       type="number"
                       value={recess.length}
                       onChange={(e) => {
-                        const sanitizedValue = securityConfig.sanitizeInput(e.target.value);
-                        if (securityConfig.validateInput(sanitizedValue, 'dimension')) {
-                          setRecess({...recess, length: sanitizedValue});
+                        const value = e.target.value;
+                        // Allow empty string and partial numbers during typing
+                        if (value === '' || /^[0-9]*$/.test(value)) {
+                          setRecess({...recess, length: value});
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // Final validation on blur
+                        const value = parseInt(e.target.value);
+                        const minLength = systemType === 'duo-inward' ? 1000 : 500;
+                        const maxLength = systemType === 'duo-inward' ? 10000 : 5000;
+                        if (!isNaN(value) && value >= minLength && value <= maxLength) {
+                          setRecess({...recess, length: value.toString()});
+                        } else if (e.target.value === '') {
+                          setRecess({...recess, length: ''});
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
