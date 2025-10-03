@@ -1,0 +1,24 @@
+{
+  "autoDeploy": true,
+  "deployOnCommit": true,
+  "deployOnVersionBump": true,
+  "productionEnvironment": "production",
+  "vercelProject": "skylight-pricing-calculators",
+  "deploymentSettings": {
+    "buildCommand": "npm run build",
+    "outputDirectory": "build",
+    "installCommand": "npm install",
+    "devCommand": "npm start",
+    "framework": "create-react-app"
+  },
+  "notifications": {
+    "onDeploySuccess": true,
+    "onDeployFailure": true,
+    "slackWebhook": null,
+    "emailNotifications": false
+  },
+  "rollbackSettings": {
+    "keepLastDeployments": 10,
+    "autoRollbackOnFailure": false
+  }
+}

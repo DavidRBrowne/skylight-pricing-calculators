@@ -166,8 +166,8 @@ For questions or issues:
 
 ---
 
-**Last Updated**: July 4, 2025
-**Status**: ✅ Ready for team use
-**Next Session**: Test functionality and deploy to Vercel
+**Last Updated**: July 20, 2025
+**Status**: ✅ Production Ready - All features working
+**Latest Update**: Added "Li-on USB-C Battery plus charger (£52)" option to power supply dropdown
 **Branding**: Official SSC logo is now integrated and visible in the header.
 **Deployment**: ✅ Live on Vercel - https://skylight-pricing-calculators.vercel.app/

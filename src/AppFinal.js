@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import brandConfig from './brand-config';
 import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square copy.png';
+import packageJson from '../package.json';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
   // State management
@@ -57,6 +58,7 @@ const SonaCalculator = () => {
     solar: { name: "Solar Pack", price: 72 },
     adapter: { name: "12v Mains Adapter", price: 18 },
     battery: { name: "Li-on USB-C Battery", price: 38 },
+    batteryCharger: { name: "Li-on USB-C Battery plus charger", price: 52 },
     charger: { name: "Li-on USB-C Battery Charger", price: 14 },
     sna45: { name: "SNA-45-12 Mains Transformer", price: 38 },
     sna100: { name: "SNA-100-12 Mains Transformer", price: 63 },
@@ -208,12 +210,16 @@ const SonaCalculator = () => {
                   Sona Sky Series
                 </h1>
                 <p className="text-lg mt-1" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
+                <div className="md:hidden mt-2">
+                  <p className="text-xs" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company - v{packageJson.version}</p>
+                </div>
               </div>
             </div>
             <div className="hidden md:block">
               <div className="text-right">
                 <p className="text-sm" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
                 <p className="text-sm font-medium" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Professional Skylight Solutions</p>
+                <p className="text-xs mt-1" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>v{packageJson.version}</p>
               </div>
             </div>
           </div>
@@ -357,6 +363,7 @@ const SonaCalculator = () => {
                       <option value="solar">Solar Pack (£72)</option>
                       <option value="adapter">12v Mains Adapter (£18)</option>
                       <option value="battery">Li-on USB-C Battery (£38)</option>
+                      <option value="batteryCharger">Li-on USB-C Battery plus charger (£52)</option>
                       <option value="charger">Li-on USB-C Battery Charger (£14)</option>
                       <option value="sna45">SNA-45-12 Mains Transformer (£38)</option>
                       <option value="sna100">SNA-100-12 Mains Transformer (£63)</option>
@@ -499,7 +506,7 @@ const SonaCalculator = () => {
                   <div className="space-y-3">
                     <div>
                       <h3 className="font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Specifications</h3>
-                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess:</span> {quote.recess.length}mm × {quote.recess.width}mm</p>
+                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Recess:</span> {quote.recess.width}mm × {quote.recess.length}mm</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Fabric:</span> {quote.fabric.type} - {quote.fabric.color}</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Hardware:</span> {quote.hardware}</p>
                       <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>

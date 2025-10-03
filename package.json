@@ -1,6 +1,6 @@
 {
   "name": "skylight-calculators",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
@@ -18,7 +18,17 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "security": "npm audit",
-    "security:fix": "npm audit fix"
+    "security:fix": "npm audit fix",
+    "version:bump": "node scripts/bump-version.js",
+    "version:minor": "node scripts/bump-version.js minor",
+    "version:major": "node scripts/bump-version.js major",
+    "version:info": "node scripts/version-manager.js info",
+    "version:history": "node scripts/version-manager.js history",
+    "rollback": "node scripts/rollback.js",
+    "rollback:list": "node scripts/rollback.js list",
+    "deploy": "node scripts/deploy-only.js",
+    "deploy:force": "node scripts/deploy-vercel.js force",
+    "deploy:status": "node scripts/deploy-vercel.js status"
   },
   "eslintConfig": {
     "extends": [
