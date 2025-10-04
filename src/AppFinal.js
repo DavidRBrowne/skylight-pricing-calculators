@@ -60,15 +60,15 @@ const SonaCalculator = () => {
 
   // Product configuration data
   const powerOptions = {
-    solar: { name: "Solar Pack", price: 72 },
-    adapter: { name: "12v Mains Adapter", price: 18 },
-    battery: { name: "Li-on USB-C Battery", price: 38 },
-    batteryCharger: { name: "Li-on USB-C Battery plus charger", price: 52 },
-    charger: { name: "Li-on USB-C Battery Charger", price: 14 },
-    sna45: { name: "SNA-45-12 Mains Transformer", price: 38 },
-    sna100: { name: "SNA-100-12 Mains Transformer", price: 63 },
-    sna75: { name: "SNA-75-12 Mains Transformer", price: 48 },
-    sna12151: { name: "SNA12151 Mains Transformer", price: 108 }
+    solar: { name: "Solar Pack", price: 72, capacity: 1, needsCharger: false },
+    adapter: { name: "12v Mains Adapter", price: 18, capacity: 1, needsCharger: false },
+    battery: { name: "Li-on USB-C Battery", price: 38, capacity: 1, needsCharger: true },
+    batteryCharger: { name: "Li-on USB-C Battery plus charger", price: 52, capacity: 1, needsCharger: false },
+    charger: { name: "Li-on USB-C Battery Charger", price: 14, capacity: 0, needsCharger: false },
+    sna45: { name: "SNA-45-12 Mains Transformer", price: 38, capacity: 1, needsCharger: false },
+    sna100: { name: "SNA-100-12 Mains Transformer", price: 63, capacity: 4, needsCharger: false },
+    sna75: { name: "SNA-75-12 Mains Transformer", price: 48, capacity: 3, needsCharger: false },
+    sna12151: { name: "SNA12151 Mains Transformer", price: 108, capacity: 6, needsCharger: false }
   };
 
   const handsetOptions = {
@@ -243,14 +243,51 @@ const SonaCalculator = () => {
         sideTrimsPrice_calc = sideTrimsPricing[nearestLength1][nearestWidth1];
       }
       
-      // For Duo systems, double the power hardware cost (each blind needs its own power source)
-      const powerPrice = systemType === 'single' 
-        ? powerOptions[powerSupply].price 
-        : powerOptions[powerSupply].price * 2;
+      // Calculate power hardware cost based on system type and capacity
+      let powerPrice, powerQuantity, chargerPrice, chargerQuantity;
+      
+      if (systemType === 'single') {
+        powerQuantity = 1;
+        powerPrice = powerOptions[powerSupply].price * powerQuantity;
+        
+        // Add charger if needed
+        if (powerOptions[powerSupply].needsCharger) {
+          chargerQuantity = 1;
+          chargerPrice = powerOptions.charger.price * chargerQuantity;
+        } else {
+          chargerQuantity = 0;
+          chargerPrice = 0;
+        }
+      } else {
+        // Duo system - calculate based on capacity
+        const requiredBlinds = 2;
+        const capacity = powerOptions[powerSupply].capacity;
+        
+        if (capacity >= requiredBlinds) {
+          // One transformer can handle multiple blinds
+          powerQuantity = 1;
+          powerPrice = powerOptions[powerSupply].price * powerQuantity;
+        } else {
+          // Need multiple units
+          powerQuantity = Math.ceil(requiredBlinds / capacity);
+          powerPrice = powerOptions[powerSupply].price * powerQuantity;
+        }
+        
+        // For batteries, only need one charger regardless of quantity
+        if (powerOptions[powerSupply].needsCharger) {
+          chargerQuantity = 1;
+          chargerPrice = powerOptions.charger.price * chargerQuantity;
+        } else {
+          chargerQuantity = 0;
+          chargerPrice = 0;
+        }
+      }
+      
+      const totalPowerPrice = powerPrice + chargerPrice;
       const handsetPrice = handsetOptions[handset].price;
       const wallSwitchPrice = wallSwitchOptions[wallSwitch].price;
 
-      const subtotal = blind1Price + blind2Price + sideTrimsPrice_calc + powerPrice + handsetPrice + wallSwitchPrice;
+      const subtotal = blind1Price + blind2Price + sideTrimsPrice_calc + totalPowerPrice + handsetPrice + wallSwitchPrice;
       const shipping = 25; // UK Courier Delivery
       const buyPriceTotal = subtotal + shipping;
       
@@ -294,7 +331,13 @@ const SonaCalculator = () => {
           blind1: blind1Price,
           blind2: blind2Price,
           sideTrims: sideTrimsPrice_calc,
-          power: powerPrice,
+          power: {
+            total: totalPowerPrice,
+            powerPrice: powerPrice,
+            powerQuantity: powerQuantity,
+            chargerPrice: chargerPrice,
+            chargerQuantity: chargerQuantity
+          },
           handset: handsetPrice,
           wallSwitch: wallSwitchPrice,
           buySubtotal: subtotal,
@@ -496,7 +539,7 @@ const SonaCalculator = () => {
                           onChange={(e) => setFabricType(e.target.value)}
                           className="mr-2"
                         />
-                        <span>Dimout</span>
+                        <span>Dimout (Translucent)</span>
                       </label>
                       <label className="flex items-center">
                         <input
@@ -507,7 +550,7 @@ const SonaCalculator = () => {
                           onChange={(e) => setFabricType(e.target.value)}
                           className="mr-2"
                         />
-                        <span>Blackout</span>
+                        <span>Blackout (Room Darkening)</span>
                       </label>
                     </div>
                   </div>
@@ -848,21 +891,22 @@ const SonaCalculator = () => {
                         {quote.tBar && <span className="text-xs text-gray-600 ml-1">({quote.tBar.color})</span>}
                       </p>
                     )}
-                    {/* Power components - show individual items for Duo systems */}
-                    {quote.systemType === 'single' ? (
+                    {/* Power components - show detailed breakdown */}
+                    <div>
                       <p style={{ color: brandConfig.colors.black }}>
-                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power:</span> £{quote.pricing.power} ({powerOptions[powerSupply].name})
+                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>
+                          Power {quote.systemType === 'duo-parallel' || quote.systemType === 'duo-inward' ? '(Duo System)' : ''}:
+                        </span> £{quote.pricing.power.total}
                       </p>
-                    ) : (
-                      <div>
-                        <p style={{ color: brandConfig.colors.black }}>
-                          <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power (Duo System):</span>
-                        </p>
+                      <p style={{ color: brandConfig.colors.black }} className="ml-4">
+                        • {powerOptions[powerSupply].name}: £{powerOptions[powerSupply].price} × {quote.pricing.power.powerQuantity} = £{quote.pricing.power.powerPrice}
+                      </p>
+                      {quote.pricing.power.chargerQuantity > 0 && (
                         <p style={{ color: brandConfig.colors.black }} className="ml-4">
-                          • {powerOptions[powerSupply].name}: £{powerOptions[powerSupply].price} × 2 = £{quote.pricing.power}
+                          • {powerOptions.charger.name}: £{powerOptions.charger.price} × {quote.pricing.power.chargerQuantity} = £{quote.pricing.power.chargerPrice}
                         </p>
-                      </div>
-                    )}
+                      )}
+                    </div>
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Handset:</span> £{quote.pricing.handset}</p>
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch:</span> £{quote.pricing.wallSwitch}</p>
                     <hr className="my-3" />
