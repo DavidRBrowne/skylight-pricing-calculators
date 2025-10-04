@@ -58,6 +58,7 @@ const SonaCalculator = () => {
   
   // State management
   const [systemType, setSystemType] = useState('single'); // 'single', 'duo-inward', 'duo-parallel'
+  const [showSystemGuide, setShowSystemGuide] = useState(false);
   const [recess, setRecess] = useState({ length: '', width: '' });
   const [fabricType, setFabricType] = useState('dimout');
   const [fabricColor, setFabricColor] = useState('snow');
@@ -411,6 +412,121 @@ const SonaCalculator = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [systemType, recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin, sideTrims, tBarColor]);
 
+  const SystemGuideModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-3xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-semibold text-teal-600">
+            Which Sona Sky System Do I Need?
+          </h2>
+          <button
+            onClick={() => setShowSystemGuide(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">What is Sona Sky?</h3>
+            <p className="text-gray-700">
+              Sona Sky is a horizontally mounted cellular blind system which sits on a 25mm shelf 
+              on all four sides. This shelf is called the side trim.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-3">System Comparison</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border p-2 text-left">System</th>
+                    <th className="border p-2">Max Width</th>
+                    <th className="border p-2">Max Length</th>
+                    <th className="border p-2">T-Bar</th>
+                    <th className="border p-2">Best For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border p-2 font-semibold">Single Blind</td>
+                    <td className="border p-2 text-center">3000mm</td>
+                    <td className="border p-2 text-center">5000mm</td>
+                    <td className="border p-2 text-center">No</td>
+                    <td className="border p-2">Standard openings</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-2 font-semibold">Duo - Inward</td>
+                    <td className="border p-2 text-center">3000mm</td>
+                    <td className="border p-2 text-center">10000mm</td>
+                    <td className="border p-2 text-center">Required</td>
+                    <td className="border p-2">Long skylights</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-2 font-semibold">Duo - Parallel</td>
+                    <td className="border p-2 text-center">6000mm</td>
+                    <td className="border p-2 text-center">5000mm</td>
+                    <td className="border p-2 text-center">Recommended</td>
+                    <td className="border p-2">Wide openings</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Single Blind System</h3>
+            <p className="text-gray-700 mb-2">
+              One horizontally mounted cellular blind on a 25mm shelf (side trim) on all four sides. 
+              Ideal for openings up to 3m wide by 5m long.
+            </p>
+            <p className="text-sm text-gray-600">Maximum size: 3000mm × 5000mm</p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Duo - Inward Configuration</h3>
+            <p className="text-gray-700 mb-2">
+              Two blinds meet in the middle of the opening with a central T-bar (double trim). 
+              The maximum width remains at 3000mm but the maximum length doubles to 10,000mm. 
+              This system requires a central T-bar where the two blinds meet.
+            </p>
+            <p className="text-sm text-gray-600">Maximum size: 3000mm × 10000mm (T-bar required)</p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Duo - Parallel Configuration</h3>
+            <p className="text-gray-700 mb-2">
+              Two blinds run side by side independently. With this system the T-bar is optional 
+              but we would almost always recommend it. The maximum width for this system is 6000mm 
+              (two 3000mm max blinds side by side) with a maximum drop of 5000mm (that of a single blind).
+            </p>
+            <p className="text-sm text-gray-600">Maximum size: 6000mm × 5000mm (T-bar strongly recommended)</p>
+          </div>
+
+          <div className="bg-teal-50 border border-teal-200 rounded p-4">
+            <h3 className="text-lg font-semibold mb-2 text-teal-800">Quick Decision Guide</h3>
+            <ul className="space-y-2 text-gray-700">
+              <li>• Opening up to 3m × 5m? → <strong>Single Blind</strong></li>
+              <li>• Opening up to 3m wide but longer than 5m? → <strong>Duo - Inward</strong></li>
+              <li>• Opening wider than 3m? → <strong>Duo - Parallel</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setShowSystemGuide(false)}
+          className="mt-6 w-full bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700"
+        >
+          Close Guide
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: brandConfig.colors.lightGrey, color: brandConfig.colors.black, fontFamily: brandConfig.fonts.body }}>
       {/* Header with logo and title */}
@@ -458,8 +574,13 @@ const SonaCalculator = () => {
                 className="mr-3"
               />
               <div>
-                <span className="font-medium">Single SonaSky Blind</span>
-                <p className="text-sm text-gray-600">Standard single blind system (Max: 3000mm × 5000mm)</p>
+                <div className="font-semibold">Single SonaSky Blind</div>
+                <div className="text-sm text-gray-600">
+                  Standard single blind system (Max: 3000mm × 5000mm)
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Cellular blind on 25mm shelf (side trim) on all four sides
+                </div>
               </div>
             </label>
             <label className="flex items-center">
@@ -472,8 +593,13 @@ const SonaCalculator = () => {
                 className="mr-3"
               />
               <div>
-                <span className="font-medium">SonaSky Duo - Inward Configuration</span>
-                <p className="text-sm text-gray-600">Two blinds meet in center (Max: 3000mm × 10000mm) - T-Bar required</p>
+                <div className="font-semibold">SonaSky Duo - Inward Configuration</div>
+                <div className="text-sm text-gray-600">
+                  Two blinds meet in center (Max: 3000mm × 10000mm) - T-Bar required
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Central T-bar where blinds meet. Width stays 3m, length doubles to 10m
+                </div>
               </div>
             </label>
             <label className="flex items-center">
@@ -486,11 +612,27 @@ const SonaCalculator = () => {
                 className="mr-3"
               />
               <div>
-                <span className="font-medium">SonaSky Duo - Parallel Configuration</span>
-                <p className="text-sm text-gray-600">Two blinds run side-by-side (Max: 6000mm × 5000mm) - T-Bar optional</p>
+                <div className="font-semibold">SonaSky Duo - Parallel Configuration</div>
+                <div className="text-sm text-gray-600">
+                  Two blinds run side-by-side (Max: 6000mm × 5000mm) - T-Bar strongly recommended
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Width doubles to 6m. T-bar optional but we recommend it where blinds meet
+                </div>
               </div>
             </label>
           </div>
+          
+          <button
+            type="button"
+            onClick={() => setShowSystemGuide(true)}
+            className="mt-4 text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Need help choosing? View System Selection Guide
+          </button>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -995,6 +1137,9 @@ const SonaCalculator = () => {
           </section>
         </div>
       </main>
+      
+      {/* System Guide Modal */}
+      {showSystemGuide && <SystemGuideModal />}
     </div>
   );
 };

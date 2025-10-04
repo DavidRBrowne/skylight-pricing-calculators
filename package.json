@@ -1,6 +1,6 @@
 {
   "name": "sona-sky-pricing-calculator",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
@@ -26,9 +26,9 @@
     "version:history": "node scripts/version-manager.js history",
     "rollback": "node scripts/rollback.js",
     "rollback:list": "node scripts/rollback.js list",
-        "deploy": "node scripts/update-version-check.js && node scripts/deploy-only.js",
-        "deploy:force": "node scripts/update-version-check.js && node scripts/deploy-vercel.js force",
-        "deploy:status": "node scripts/deploy-vercel.js status",
+    "deploy": "node scripts/update-version-check.js && node scripts/deploy-only.js",
+    "deploy:force": "node scripts/update-version-check.js && node scripts/deploy-vercel.js force",
+    "deploy:status": "node scripts/deploy-vercel.js status",
     "security:audit": "node scripts/security-audit.js",
     "security:check": "npm audit && npm run security:audit"
   },
