@@ -5,6 +5,57 @@ import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square c
 import securityConfig, { securityMiddleware } from './security-config';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
+  
+  // Auto-update detection and service worker registration
+  useEffect(() => {
+    // Register service worker for automatic updates
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered successfully:', registration);
+          
+          // Check for updates every 30 seconds
+          setInterval(() => {
+            registration.update();
+          }, 30000);
+          
+          // Listen for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New update available - show notification
+                if (confirm('A new version of the SonaSky Calculator is available. Reload to update?')) {
+                  window.location.reload();
+                }
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.log('Service Worker registration failed:', error);
+        });
+    }
+    
+    // Periodic version check
+    const versionCheckInterval = setInterval(() => {
+      fetch('/version-check.json?' + Date.now())
+        .then(response => response.json())
+        .then(data => {
+          if (data.version !== securityConfig.version) {
+            if (confirm(`New version ${data.version} available. Reload to update?`)) {
+              window.location.reload();
+            }
+          }
+        })
+        .catch(error => {
+          console.log('Version check failed:', error);
+        });
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(versionCheckInterval);
+  }, []);
+  
   // State management
   const [systemType, setSystemType] = useState('single'); // 'single', 'duo-inward', 'duo-parallel'
   const [recess, setRecess] = useState({ length: '', width: '' });
