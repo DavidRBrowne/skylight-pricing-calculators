@@ -887,4 +887,3 @@ const SonaCalculator = () => {
 };
 
 export default SonaCalculator;
-console.log('NEW VERSION LOADED - RED BACKGROUND TEST');
