@@ -4,17 +4,17 @@ const fs = require('fs');
 const path = require('path');
 
 function runSecurityAudit() {
-  console.log('🔒 Running Security Audit for v1.1.0...\n');
+  console.log('🔒 Running Security Audit for v1.1.1...\n');
   
   const issues = [];
   const warnings = [];
   
-  // Check version
+  // Check version lock
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  if (packageJson.version !== '1.1.0') {
-    issues.push(`❌ Version not set to 1.1.0. Current: ${packageJson.version}`);
+  if (packageJson.version !== '1.1.1') {
+    issues.push(`❌ Version not locked to 1.1.1. Current: ${packageJson.version}`);
   } else {
-    console.log('✅ Version set to 1.1.0');
+    console.log('✅ Version locked to 1.1.1');
   }
   
   // Check git hooks are disabled
@@ -96,8 +96,8 @@ function runSecurityAudit() {
   console.log('\n🔒 Security Status:', issues.length === 0 ? 'SECURE' : 'NEEDS ATTENTION');
   
   if (issues.length === 0) {
-    console.log('\n🎉 Application is secure and ready for v1.1.0');
-    console.log('🚀 Ready for production deployment with SonaSky Duo functionality');
+    console.log('\n🎉 Application is secure and locked to v1.1.1');
+    console.log('🚀 Ready for production deployment with complete SonaSky functionality');
   }
   
   return issues.length === 0;

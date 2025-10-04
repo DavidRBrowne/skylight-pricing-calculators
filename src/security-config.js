@@ -3,9 +3,9 @@
 
 export const securityConfig = {
   // Version lock
-  version: '1.1.0',
-  locked: false,
-  allowUpdates: true,
+  version: '1.1.1',
+  locked: true,
+  allowUpdates: false,
   
   // Security settings
   security: {

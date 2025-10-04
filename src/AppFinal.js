@@ -121,7 +121,8 @@ const SonaCalculator = () => {
 
 
 
-  // Security validation function
+  // Security validation function (currently unused but kept for future use)
+  // eslint-disable-next-line no-unused-vars
   const validateSecurity = (value, type) => {
     if (!securityConfig.validateInput(value, type)) {
       return false;
