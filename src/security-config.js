@@ -1,9 +1,9 @@
-// Security Configuration for SonaSky Pricing Calculator v1.2.4
+// Security Configuration for SonaSky Pricing Calculator v1.2.5
 // Project renamed from skylight-calculators to sona-sky-pricing-calculator
 
 export const securityConfig = {
   // Version lock
-  version: '1.2.4',
+  version: '1.2.5',
   locked: false,
   allowUpdates: true,
   
