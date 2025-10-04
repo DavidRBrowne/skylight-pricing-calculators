@@ -5,7 +5,7 @@
 **Version:** v1.2.0  
 **Project Name:** sona-sky-pricing-calculator  
 **Status:** ✅ Production Ready  
-**Deployment:** https://sona-sky-pricing-calculator.vercel.app  
+**Deployment:** https://sona-sky-pricing-calculator-ixii21r9c-david-brownes-projects.vercel.app  
 **Security:** 🔒 Fully Secured  
 
 ---
