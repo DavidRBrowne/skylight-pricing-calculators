@@ -243,7 +243,10 @@ const SonaCalculator = () => {
         sideTrimsPrice_calc = sideTrimsPricing[nearestLength1][nearestWidth1];
       }
       
-      const powerPrice = powerOptions[powerSupply].price;
+      // For Duo systems, double the power hardware cost (each blind needs its own power source)
+      const powerPrice = systemType === 'single' 
+        ? powerOptions[powerSupply].price 
+        : powerOptions[powerSupply].price * 2;
       const handsetPrice = handsetOptions[handset].price;
       const wallSwitchPrice = wallSwitchOptions[wallSwitch].price;
 
@@ -845,7 +848,21 @@ const SonaCalculator = () => {
                         {quote.tBar && <span className="text-xs text-gray-600 ml-1">({quote.tBar.color})</span>}
                       </p>
                     )}
-                    <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power:</span> £{quote.pricing.power}</p>
+                    {/* Power components - show individual items for Duo systems */}
+                    {quote.systemType === 'single' ? (
+                      <p style={{ color: brandConfig.colors.black }}>
+                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power:</span> £{quote.pricing.power} ({powerOptions[powerSupply].name})
+                      </p>
+                    ) : (
+                      <div>
+                        <p style={{ color: brandConfig.colors.black }}>
+                          <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Power (Duo System):</span>
+                        </p>
+                        <p style={{ color: brandConfig.colors.black }} className="ml-4">
+                          • {powerOptions[powerSupply].name}: £{powerOptions[powerSupply].price} × 2 = £{quote.pricing.power}
+                        </p>
+                      </div>
+                    )}
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Handset:</span> £{quote.pricing.handset}</p>
                     <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch:</span> £{quote.pricing.wallSwitch}</p>
                     <hr className="my-3" />
