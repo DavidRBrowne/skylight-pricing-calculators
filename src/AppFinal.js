@@ -25,7 +25,7 @@ const SonaCalculator = () => {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New update available - show notification
-                if (confirm('A new version of the SonaSky Calculator is available. Reload to update?')) {
+                if (window.confirm('A new version of the SonaSky Calculator is available. Reload to update?')) {
                   window.location.reload();
                 }
               }
@@ -43,7 +43,7 @@ const SonaCalculator = () => {
         .then(response => response.json())
         .then(data => {
           if (data.version !== securityConfig.version) {
-            if (confirm(`New version ${data.version} available. Reload to update?`)) {
+            if (window.confirm(`New version ${data.version} available. Reload to update?`)) {
               window.location.reload();
             }
           }
