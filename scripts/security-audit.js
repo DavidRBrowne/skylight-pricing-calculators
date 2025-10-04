@@ -4,17 +4,17 @@ const fs = require('fs');
 const path = require('path');
 
 function runSecurityAudit() {
-  console.log('🔒 Running Security Audit for SonaSky Calculator v1.2.5...\n');
+  console.log('🔒 Running Security Audit for SonaSky Calculator v1.2.6...\n');
   
   const issues = [];
   const warnings = [];
   
   // Check version and project name
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  if (packageJson.version !== '1.2.5') {
-    issues.push(`❌ Version not set to 1.2.5. Current: ${packageJson.version}`);
+  if (packageJson.version !== '1.2.6') {
+    issues.push(`❌ Version not set to 1.2.6. Current: ${packageJson.version}`);
   } else {
-    console.log('✅ Version set to 1.2.5');
+    console.log('✅ Version set to 1.2.6');
   }
   
   if (packageJson.name !== 'sona-sky-pricing-calculator') {
