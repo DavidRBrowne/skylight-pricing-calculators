@@ -1,6 +1,10 @@
-# Sona Sky Series - Skylight Blind Calculator
+# 🏗️ SonaSky Calculator - The Scottish Shutter Company
 
-A premium React-based pricing calculator for The Scottish Shutter Company's skylight blind products.
+**Version:** v1.1.1 (LOCKED & SECURED)  
+**Status:** ✅ Production Ready  
+**Live URL:** https://skylight-pricing-calculators-8p9gdgjr9-david-brownes-projects.vercel.app
+
+A premium React-based pricing calculator for The Scottish Shutter Company's complete SonaSky product range including Single, Duo Inward, and Duo Parallel configurations.
 
 ## 🎯 Project Status
 
