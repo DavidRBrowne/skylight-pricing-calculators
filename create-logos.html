@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Sona Logos</title>
+    <style>
+        body { 
+            background: #000; 
+            margin: 20px; 
+            font-family: Arial, sans-serif; 
+        }
+        .logo-container {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+        }
+        .logo-192 {
+            width: 192px;
+            height: 192px;
+            background: #000;
+            border: 2px solid #fff;
+            position: relative;
+            margin: 10px;
+        }
+        .logo-512 {
+            width: 512px;
+            height: 512px;
+            background: #000;
+            border: 2px solid #fff;
+            position: relative;
+            margin: 10px;
+        }
+        .letter {
+            color: #fff;
+            font-weight: bold;
+            position: absolute;
+            text-align: center;
+        }
+        .letter-s { left: 48px; top: 120px; font-size: 48px; }
+        .letter-n { left: 96px; top: 120px; font-size: 48px; }
+        .letter-a { left: 144px; top: 120px; font-size: 48px; }
+        .letter-s-512 { left: 128px; top: 320px; font-size: 128px; }
+        .letter-n-512 { left: 256px; top: 320px; font-size: 128px; }
+        .letter-a-512 { left: 384px; top: 320px; font-size: 128px; }
+        .o-circle {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+        }
+        .o-circle-192 {
+            width: 48px;
+            height: 48px;
+            left: 72px;
+            top: 48px;
+        }
+        .o-circle-512 {
+            width: 128px;
+            height: 128px;
+            left: 192px;
+            top: 128px;
+        }
+        .o-stripe {
+            position: absolute;
+            background: #000;
+        }
+        .stripe-192 {
+            width: 48px;
+            height: 6px;
+            left: 72px;
+        }
+        .stripe-512 {
+            width: 128px;
+            height: 16px;
+            left: 192px;
+        }
+        .stripe-192-1 { top: 54px; }
+        .stripe-192-2 { top: 66px; }
+        .stripe-192-3 { top: 78px; }
+        .stripe-192-4 { top: 90px; }
+        .stripe-512-1 { top: 144px; }
+        .stripe-512-2 { top: 176px; }
+        .stripe-512-3 { top: 208px; }
+        .stripe-512-4 { top: 240px; }
+    </style>
+</head>
+<body>
+    <h1 style="color: white;">Sona Logo Generator</h1>
+    
+    <div class="logo-container">
+        <h3 style="color: white;">192x192 Logo</h3>
+        <div class="logo-192">
+            <div class="letter letter-s">S</div>
+            <div class="letter letter-n">N</div>
+            <div class="letter letter-a">A</div>
+            <div class="o-circle o-circle-192"></div>
+            <div class="o-stripe stripe-192 stripe-192-1"></div>
+            <div class="o-stripe stripe-192 stripe-192-2"></div>
+            <div class="o-stripe stripe-192 stripe-192-3"></div>
+            <div class="o-stripe stripe-192 stripe-192-4"></div>
+        </div>
+    </div>
+    
+    <div class="logo-container">
+        <h3 style="color: white;">512x512 Logo</h3>
+        <div class="logo-512">
+            <div class="letter letter-s-512">S</div>
+            <div class="letter letter-n-512">N</div>
+            <div class="letter letter-a-512">A</div>
+            <div class="o-circle o-circle-512"></div>
+            <div class="o-stripe stripe-512 stripe-512-1"></div>
+            <div class="o-stripe stripe-512 stripe-512-2"></div>
+            <div class="o-stripe stripe-512 stripe-512-3"></div>
+            <div class="o-stripe stripe-512 stripe-512-4"></div>
+        </div>
+    </div>
+    
+    <p style="color: white; margin-top: 20px;">
+        Right-click on each logo and "Save image as" to save as PNG files.
+    </p>
+</body>
+</html>
