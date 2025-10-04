@@ -276,7 +276,16 @@ const SonaCalculator = () => {
           required: systemType === 'duo-inward',
           color: tBarColorOptions[tBarColor]
         } : null,
-        cordCount: getCordCount(totalWidth),
+        cordCount: systemType === 'single' 
+          ? getCordCount(totalWidth)
+          : {
+              // For Duo systems, each blind needs its own cords
+              blind1: getCordCount(blind1.width),
+              blind2: getCordCount(blind2.width),
+              total: getCordCount(blind1.width).total + getCordCount(blind2.width).total,
+              spooling: getCordCount(blind1.width).spooling + getCordCount(blind2.width).spooling,
+              support: getCordCount(blind1.width).support + getCordCount(blind2.width).support
+            },
         pricing: {
           blind1: blind1Price,
           blind2: blind2Price,
@@ -775,7 +784,18 @@ const SonaCalculator = () => {
                         </p>
                       )}
                       
-                      <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>
+                      {quote.systemType === 'single' ? (
+                        <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>
+                      ) : (
+                        <div>
+                          <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Cord Count:</span></p>
+                          <div className="ml-4 text-sm">
+                            <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind 1:</span> {quote.cordCount.blind1.total} total ({quote.cordCount.blind1.spooling} spooling, {quote.cordCount.blind1.support} support)</p>
+                            <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Blind 2:</span> {quote.cordCount.blind2.total} total ({quote.cordCount.blind2.spooling} spooling, {quote.cordCount.blind2.support} support)</p>
+                            <p style={{ color: brandConfig.colors.black }}><span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>System Total:</span> {quote.cordCount.total} total ({quote.cordCount.spooling} spooling, {quote.cordCount.support} support)</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
