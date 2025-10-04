@@ -1,8 +1,9 @@
-# 🏗️ SonaSky Calculator - The Scottish Shutter Company
+# 🏗️ SonaSky Pricing Calculator - The Scottish Shutter Company
 
-**Version:** v1.1.1 (LOCKED & SECURED)  
+**Version:** v1.2.0  
 **Status:** ✅ Production Ready  
-**Live URL:** https://skylight-pricing-calculators-8p9gdgjr9-david-brownes-projects.vercel.app
+**Project Name:** sona-sky-pricing-calculator  
+**Live URL:** https://sona-sky-pricing-calculator.vercel.app
 
 A premium React-based pricing calculator for The Scottish Shutter Company's complete SonaSky product range including Single, Duo Inward, and Duo Parallel configurations.
 

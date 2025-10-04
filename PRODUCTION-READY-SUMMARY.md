@@ -1,10 +1,11 @@
-# 🎉 SonaSky Calculator v1.1.1 - Production Ready
+# 🎉 SonaSky Pricing Calculator v1.2.0 - Production Ready
 
 ## 📋 **Final Release Summary**
 
-**Version:** v1.1.1 (LOCKED & SECURED)  
+**Version:** v1.2.0  
+**Project Name:** sona-sky-pricing-calculator  
 **Status:** ✅ Production Ready  
-**Deployment:** https://skylight-pricing-calculators-8p9gdgjr9-david-brownes-projects.vercel.app  
+**Deployment:** https://sona-sky-pricing-calculator.vercel.app  
 **Security:** 🔒 Fully Secured  
 
 ---

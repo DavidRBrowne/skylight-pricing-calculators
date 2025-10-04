@@ -4,17 +4,23 @@ const fs = require('fs');
 const path = require('path');
 
 function runSecurityAudit() {
-  console.log('🔒 Running Security Audit for v1.1.1...\n');
+  console.log('🔒 Running Security Audit for SonaSky Calculator v1.2.0...\n');
   
   const issues = [];
   const warnings = [];
   
-  // Check version lock
+  // Check version and project name
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  if (packageJson.version !== '1.1.1') {
-    issues.push(`❌ Version not locked to 1.1.1. Current: ${packageJson.version}`);
+  if (packageJson.version !== '1.2.0') {
+    issues.push(`❌ Version not set to 1.2.0. Current: ${packageJson.version}`);
   } else {
-    console.log('✅ Version locked to 1.1.1');
+    console.log('✅ Version set to 1.2.0');
+  }
+  
+  if (packageJson.name !== 'sona-sky-pricing-calculator') {
+    issues.push(`❌ Project name not updated. Current: ${packageJson.name}`);
+  } else {
+    console.log('✅ Project name updated to sona-sky-pricing-calculator');
   }
   
   // Check git hooks are disabled
@@ -96,8 +102,8 @@ function runSecurityAudit() {
   console.log('\n🔒 Security Status:', issues.length === 0 ? 'SECURE' : 'NEEDS ATTENTION');
   
   if (issues.length === 0) {
-    console.log('\n🎉 Application is secure and locked to v1.1.1');
-    console.log('🚀 Ready for production deployment with complete SonaSky functionality');
+    console.log('\n🎉 SonaSky Calculator is ready for v1.2.0');
+    console.log('🚀 Ready for production deployment with updated project name');
   }
   
   return issues.length === 0;
