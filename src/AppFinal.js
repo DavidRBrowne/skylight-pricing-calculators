@@ -59,6 +59,7 @@ const SonaCalculator = () => {
   // State management
   const [systemType, setSystemType] = useState('single'); // 'single', 'duo-inward', 'duo-parallel'
   const [showSystemGuide, setShowSystemGuide] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [recess, setRecess] = useState({ length: '', width: '' });
   const [fabricType, setFabricType] = useState('dimout');
   const [fabricColor, setFabricColor] = useState('snow');
@@ -507,6 +508,84 @@ const SonaCalculator = () => {
             <p className="text-sm text-gray-600">Maximum size: 6000mm × 5000mm (T-bar strongly recommended)</p>
           </div>
 
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-semibold mb-4 text-teal-800">What's Included with Every Sona Sky System</h3>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="border border-gray-200 rounded p-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                  </svg>
+                  Motor
+                </h4>
+                <p className="text-sm text-gray-700">
+                  Designed in France, the Somfy Tilt & Lift motor provides raised, lower and 
+                  intermediate positions with precision control. The motor is nestled discreetly 
+                  into the headrail.
+                </p>
+              </div>
+
+              <div className="border border-gray-200 rounded p-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z" />
+                  </svg>
+                  Hardware
+                </h4>
+                <p className="text-sm text-gray-700">
+                  German Engineered to the finest quality and specification, the hardware is 
+                  finished in a premium fine texture coating, providing a more superior look and feel.
+                </p>
+              </div>
+
+              <div className="border border-gray-200 rounded p-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  </svg>
+                  Programme Button
+                </h4>
+                <p className="text-sm text-gray-700">
+                  Unique to SONA, housed at the back of the headrail sits the easy-access 
+                  programming button. Allowing functionality and pairing of the motor without 
+                  the need to remove the blind.
+                </p>
+              </div>
+
+              <div className="border border-gray-200 rounded p-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
+                  </svg>
+                  Fixings Kit
+                </h4>
+                <p className="text-sm text-gray-700">
+                  Included with the blind are an option of top or face fix brackets, finished 
+                  in a premium fine texture coating to match our blind hardware. Screws and 
+                  wall plugs included.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Technical Specifications Diagram */}
+          <div className="border-t pt-6 mt-6">
+            <h3 className="text-lg font-semibold mb-4 text-teal-800">Technical Specifications</h3>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <img 
+                src="/images/sona/technical-specs.png" 
+                alt="SonaSky Technical Specifications Diagram" 
+                className="w-full max-w-4xl mx-auto cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setShowImageModal(true)}
+                title="Click to enlarge"
+              />
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Click image to enlarge
+              </p>
+            </div>
+          </div>
+
           <div className="bg-teal-50 border border-teal-200 rounded p-4">
             <h3 className="text-lg font-semibold mb-2 text-teal-800">Quick Decision Guide</h3>
             <ul className="space-y-2 text-gray-700">
@@ -523,6 +602,31 @@ const SonaCalculator = () => {
         >
           Close Guide
         </button>
+      </div>
+    </div>
+  );
+
+  const ImageModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="relative max-w-6xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
+        <div className="flex justify-between items-center p-4 border-b">
+          <h3 className="text-lg font-semibold text-teal-600">
+            SonaSky Technical Specifications
+          </h3>
+          <button
+            onClick={() => setShowImageModal(false)}
+            className="text-gray-400 hover:text-gray-600 text-2xl"
+          >
+            ×
+          </button>
+        </div>
+        <div className="p-4 overflow-auto max-h-[80vh]">
+          <img 
+            src="/images/sona/technical-specs.png" 
+            alt="SonaSky Technical Specifications Diagram" 
+            className="w-full h-auto"
+          />
+        </div>
       </div>
     </div>
   );
@@ -1137,11 +1241,14 @@ const SonaCalculator = () => {
           </section>
         </div>
       </main>
-      
-      {/* System Guide Modal */}
-      {showSystemGuide && <SystemGuideModal />}
-    </div>
-  );
+        
+        {/* System Guide Modal */}
+        {showSystemGuide && <SystemGuideModal />}
+        
+        {/* Image Modal */}
+        {showImageModal && <ImageModal />}
+      </div>
+    );
 };
 
 export default SonaCalculator;
