@@ -1,11 +1,11 @@
-# 🎉 SonaSky Pricing Calculator v1.2.6 - Production Ready
+# 🎉 SonaSky Pricing Calculator v1.2.7 - Production Ready
 
 ## 📋 **Final Release Summary**
 
-**Version:** v1.2.6  
+**Version:** v1.2.7  
 **Project Name:** sona-sky-pricing-calculator  
 **Status:** ✅ Production Ready  
-**Deployment:** https://sona-sky-pricing-calculator-ocdz5wjyn-david-brownes-projects.vercel.app  
+**Deployment:** https://sona-sky-pricing-calculator-hw76y5vu6-david-brownes-projects.vercel.app  
 **Last Updated:** October 4, 2025  
 **Security:** 🔒 Fully Secured  
 
