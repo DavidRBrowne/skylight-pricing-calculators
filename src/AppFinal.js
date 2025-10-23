@@ -60,6 +60,7 @@ const SonaCalculator = () => {
   const [systemType, setSystemType] = useState('single'); // 'single', 'duo-inward', 'duo-parallel'
   const [showSystemGuide, setShowSystemGuide] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showSideTrimsInfo, setShowSideTrimsInfo] = useState(false);
   const [recess, setRecess] = useState({ length: '', width: '' });
   const [fabricType, setFabricType] = useState('dimout');
   const [fabricColor, setFabricColor] = useState('snow');
@@ -72,6 +73,16 @@ const SonaCalculator = () => {
   const [tBarColor, setTBarColor] = useState('white');
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
+
+  // Automatically enable side trims for duo-inward systems (required)
+  useEffect(() => {
+    if (systemType === 'duo-inward') {
+      setSideTrims(true);
+    } else if (systemType === 'single') {
+      // Reset to false when switching to single blind
+      setSideTrims(false);
+    }
+  }, [systemType]);
 
   // Pricing tables
   const dimoutPricing = {
@@ -292,7 +303,8 @@ const SonaCalculator = () => {
         const sideTrimsLength = findNextSizeUp(totalLength, lengthKeys);
         const sideTrimsWidth = findNextSizeUp(totalWidth, widthKeys);
         sideTrimsPrice_calc = sideTrimsPricing[sideTrimsLength][sideTrimsWidth];
-      } else if (systemType === 'single') {
+      } else if (systemType === 'single' && sideTrims) {
+        // For single systems, only include if selected
         sideTrimsPrice_calc = sideTrimsPricing[nearestLength1][nearestWidth1];
       }
       
@@ -631,6 +643,105 @@ const SonaCalculator = () => {
     </div>
   );
 
+  const SideTrimsInfoModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-semibold text-teal-600">
+            About Side Trims
+          </h2>
+          <button
+            onClick={() => setShowSideTrimsInfo(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="space-y-4 text-gray-700">
+          {/* What are Side Trims */}
+          <div>
+            <h3 className="text-lg font-semibold text-teal-700 mb-2">What are Side Trims?</h3>
+            <p className="mb-2">
+              Side Trims are optional aluminium profiles that provide a neat, professional finish around the edges of your Sona Sky blind installation.
+            </p>
+            <p>
+              Each set includes <strong>4 lengths of 25mm × 25mm aluminium trim</strong> that match your selected hardware color (White, Grey, Anthracite, or Black RAL).
+            </p>
+          </div>
+
+          {/* When to Use */}
+          <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-700 mb-2">When to Use Side Trims</h3>
+            <ul className="list-disc list-inside space-y-1">
+              <li><strong>Single Blinds:</strong> Optional - Aesthetic enhancement for a premium finish</li>
+              <li><strong>Duo Parallel:</strong> Optional - Creates a unified, professional appearance</li>
+              <li><strong>Duo Inward:</strong> Required - Essential for proper system operation and T-Bar mounting</li>
+            </ul>
+          </div>
+
+          {/* Benefits */}
+          <div>
+            <h3 className="text-lg font-semibold text-teal-700 mb-2">Benefits</h3>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Creates a clean, finished edge around the blind</li>
+              <li>Conceals installation gaps and imperfections</li>
+              <li>Matches your hardware color for a coordinated look</li>
+              <li>Professional appearance for high-end installations</li>
+              <li>Durable powder-coated aluminium construction</li>
+            </ul>
+          </div>
+
+          {/* Technical Specifications */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-teal-700 mb-2">Technical Specifications</h3>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div><strong>Profile Size:</strong></div>
+              <div>25mm × 25mm</div>
+              <div><strong>Material:</strong></div>
+              <div>Aluminium</div>
+              <div><strong>Finish:</strong></div>
+              <div>Powder-coated RAL color</div>
+              <div><strong>Quantity:</strong></div>
+              <div>4 lengths per set</div>
+            </div>
+          </div>
+
+          {/* Duo Systems Note */}
+          <div className="border-l-4 border-blue-500 bg-blue-50 p-4">
+            <h3 className="text-lg font-semibold text-blue-700 mb-2">Duo Systems Note</h3>
+            <p className="mb-2">
+              <strong>Inward Configuration:</strong> Side Trims and T-Bar are automatically included as they're required for the system to operate correctly. The T-Bar provides the central mounting point where both blinds meet.
+            </p>
+            <p>
+              <strong>Parallel Configuration:</strong> Side Trims and T-Bar are optional and serve an aesthetic purpose only, creating a unified appearance between the two parallel blinds.
+            </p>
+          </div>
+
+          {/* Pricing */}
+          <div>
+            <h3 className="text-lg font-semibold text-teal-700 mb-2">Pricing</h3>
+            <p>
+              Side Trims are priced based on your blind dimensions and automatically calculated when selected. 
+              The price includes all 4 aluminium lengths in your chosen color. For Duo Inward systems, the T-Bar is included in the Side Trims price.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 pt-4 border-t">
+          <button
+            onClick={() => setShowSideTrimsInfo(false)}
+            className="w-full bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: brandConfig.colors.lightGrey, color: brandConfig.colors.black, fontFamily: brandConfig.fonts.body }}>
       {/* Header with logo and title */}
@@ -959,60 +1070,83 @@ const SonaCalculator = () => {
                 </div>
               </div>
 
-              {/* Step 5: Side Trims & T-Bar (Duo Systems) */}
-              {(systemType === 'duo-inward' || systemType === 'duo-parallel') && (
-                <div className="mb-6">
-                  <div className="flex items-center mb-4">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">5</div>
-                    <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Side Trims & T-Bar</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {systemType === 'duo-inward' && (
-                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-sm text-blue-800">
-                          <strong>Inward Configuration:</strong> Side Trims and T-Bar are required for operation.
-                        </p>
-                      </div>
-                    )}
-                    {systemType === 'duo-parallel' && (
-                      <div>
-                        <label className="flex items-center mb-3">
-                          <input
-                            type="checkbox"
-                            checked={sideTrims}
-                            onChange={(e) => setSideTrims(e.target.checked)}
-                            className="mr-2"
-                          />
-                          <span className="font-medium">Include Side Trims & T-Bar (Optional - Aesthetic only)</span>
-                        </label>
-                        <p className="text-sm text-gray-600 ml-6">
-                          Side Trims include 4 lengths of 25mm × 25mm aluminium trim with T-Bar included.
-                        </p>
-                      </div>
-                    )}
-                    {(systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims)) && (
-                      <div>
-                        <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>T-Bar Color</label>
-                        <select
-                          value={tBarColor}
-                          onChange={(e) => setTBarColor(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                        >
-                          <option value="white">White RAL9016</option>
-                          <option value="grey">Grey RAL7040</option>
-                          <option value="anthracite">Anthracite RAL7016</option>
-                          <option value="black">Black RAL9005</option>
-                        </select>
-                      </div>
-                    )}
-                  </div>
+              {/* Step 5: Side Trims & T-Bar */}
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">5</div>
+                  <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Side Trims{systemType !== 'single' && ' & T-Bar'}</h3>
+                  <button
+                    onClick={() => setShowSideTrimsInfo(true)}
+                    className="ml-2 text-teal-600 hover:text-teal-700 focus:outline-none"
+                    title="Learn more about Side Trims"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </button>
                 </div>
-              )}
+                <div className="space-y-4">
+                  {systemType === 'single' && (
+                    <div>
+                      <label className="flex items-center mb-3">
+                        <input
+                          type="checkbox"
+                          checked={sideTrims}
+                          onChange={(e) => setSideTrims(e.target.checked)}
+                          className="mr-2"
+                        />
+                        <span className="font-medium">Include Side Trims (Optional)</span>
+                      </label>
+                      <p className="text-sm text-gray-600 ml-6">
+                        Side Trims include 4 lengths of 25mm × 25mm aluminium trim to match your hardware color.
+                      </p>
+                    </div>
+                  )}
+                  {systemType === 'duo-inward' && (
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        <strong>Inward Configuration:</strong> Side Trims and T-Bar are required for operation.
+                      </p>
+                    </div>
+                  )}
+                  {systemType === 'duo-parallel' && (
+                    <div>
+                      <label className="flex items-center mb-3">
+                        <input
+                          type="checkbox"
+                          checked={sideTrims}
+                          onChange={(e) => setSideTrims(e.target.checked)}
+                          className="mr-2"
+                        />
+                        <span className="font-medium">Include Side Trims & T-Bar (Optional - Aesthetic only)</span>
+                      </label>
+                      <p className="text-sm text-gray-600 ml-6">
+                        Side Trims include 4 lengths of 25mm × 25mm aluminium trim with T-Bar included.
+                      </p>
+                    </div>
+                  )}
+                  {(systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims)) && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>T-Bar Color</label>
+                      <select
+                        value={tBarColor}
+                        onChange={(e) => setTBarColor(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      >
+                        <option value="white">White RAL9016</option>
+                        <option value="grey">Grey RAL7040</option>
+                        <option value="anthracite">Anthracite RAL7016</option>
+                        <option value="black">Black RAL9005</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Step 6: Retail Pricing Margin */}
               <div className="mb-4">
                 <div className="flex items-center mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">{systemType === 'single' ? '5' : '6'}</div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-sm flex items-center justify-center mr-4">6</div>
                   <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Retail Pricing Margin</h3>
                 </div>
                 <div>
@@ -1184,7 +1318,9 @@ const SonaCalculator = () => {
                     )}
                     {quote.pricing.sideTrims > 0 && (
                       <p style={{ color: brandConfig.colors.black }}>
-                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>Side Trims & T-Bar:</span> £{quote.pricing.sideTrims}
+                        <span className="font-medium" style={{ color: brandConfig.colors.deepTeal }}>
+                          {quote.systemType === 'single' ? 'Side Trims:' : 'Side Trims & T-Bar:'}
+                        </span> £{quote.pricing.sideTrims}
                         {quote.tBar && <span className="text-xs text-gray-600 ml-1">({quote.tBar.color})</span>}
                       </p>
                     )}
@@ -1247,6 +1383,9 @@ const SonaCalculator = () => {
         
         {/* Image Modal */}
         {showImageModal && <ImageModal />}
+        
+        {/* Side Trims Info Modal */}
+        {showSideTrimsInfo && <SideTrimsInfoModal />}
       </div>
     );
 };
