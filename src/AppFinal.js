@@ -3,25 +3,31 @@ import brandConfig from './brand-config';
 import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square copy.png';
 // import packageJson from '../package.json'; // Removed - using securityConfig.version instead
 import securityConfig, { securityMiddleware } from './security-config';
+import html2pdf from 'html2pdf.js';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
   
   // Auto-update detection and service worker registration
   useEffect(() => {
-    // Register service worker for automatic updates
-    if ('serviceWorker' in navigator) {
+    let serviceWorkerUpdateInterval;
+
+    // Register service worker for automatic updates (production only)
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('Service Worker registered successfully:', registration);
-          
+
           // Check for updates every 30 seconds
-          setInterval(() => {
+          serviceWorkerUpdateInterval = setInterval(() => {
             registration.update();
           }, 30000);
-          
+
           // Listen for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
+            if (!newWorker) {
+              return;
+            }
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New update available - show notification
@@ -36,7 +42,7 @@ const SonaCalculator = () => {
           console.log('Service Worker registration failed:', error);
         });
     }
-    
+
     // Periodic version check
     const versionCheckInterval = setInterval(() => {
       fetch('/version-check.json?' + Date.now())
@@ -52,8 +58,13 @@ const SonaCalculator = () => {
           console.log('Version check failed:', error);
         });
     }, 60000); // Check every minute
-    
-    return () => clearInterval(versionCheckInterval);
+
+    return () => {
+      clearInterval(versionCheckInterval);
+      if (serviceWorkerUpdateInterval) {
+        clearInterval(serviceWorkerUpdateInterval);
+      }
+    };
   }, []);
   
   // State management
@@ -61,6 +72,13 @@ const SonaCalculator = () => {
   const [showSystemGuide, setShowSystemGuide] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showSideTrimsInfo, setShowSideTrimsInfo] = useState(false);
+  const [customerDetails, setCustomerDetails] = useState({
+    name: '',
+    address: '',
+    phone: '',
+    email: ''
+  });
+  const [showCustomerDetails, setShowCustomerDetails] = useState(false);
   const [recess, setRecess] = useState({ length: '', width: '' });
   const [fabricType, setFabricType] = useState('dimout');
   const [fabricColor, setFabricColor] = useState('snow');
@@ -73,6 +91,269 @@ const SonaCalculator = () => {
   const [tBarColor, setTBarColor] = useState('white');
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
+
+  const handleCustomerDetailChange = (field, value) => {
+    setCustomerDetails((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleGeneratePdf = () => {
+    if (!quote) {
+      return;
+    }
+
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
+    const quoteReference = `SSC-${currentDate.getFullYear()}-${randomDigits}`;
+
+    const fabricTypeLabel = quote.fabric.type === 'blackout' ? 'Blackout' : 'Dimout';
+    const blindQuantity = quote.systemType === 'single' ? 1 : 2;
+    const addressHtml = customerDetails.address
+      ? customerDetails.address
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/\n/g, '<br />')
+      : 'Provided upon acceptance';
+
+    const safeText = (value, fallback = 'Not provided') => {
+      if (!value || value.trim() === '') {
+        return fallback;
+      }
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+
+    const toMoney = (amount) => {
+      const safeAmount = Number.isFinite(amount) ? amount : 0;
+      return `£${safeAmount
+        .toLocaleString('en-GB', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}`;
+    };
+
+    const toTwoDecimals = (value) => {
+      const safeValue = Number.isFinite(value) ? value : 0;
+      return Math.round(safeValue * 100) / 100;
+    };
+
+    const buyTotal = quote.pricing.buyTotal || 0;
+    const retailSubtotal = toTwoDecimals(quote.pricing.retailTotal || 0);
+    const totalWithVat = toTwoDecimals(quote.pricing.retailTotalIncVAT || 0);
+    const vatAmount = toTwoDecimals(totalWithVat - retailSubtotal);
+
+    const mainBlindCost = (quote.pricing.blind1 || 0) + (quote.pricing.blind2 || 0);
+    const sideTrimCost = quote.pricing.sideTrims || 0;
+    const accessoryBaseCost = (quote.pricing.power?.total || 0)
+      + (quote.pricing.handset || 0)
+      + (quote.pricing.wallSwitch || 0)
+      + (quote.pricing.shipping || 0);
+
+    const totalBaseCost = mainBlindCost + sideTrimCost + accessoryBaseCost;
+    let mainLineTotal = 0;
+    let sideTrimTotal = 0;
+    let accessoryTotal = 0;
+
+    if (totalBaseCost > 0 && retailSubtotal > 0) {
+      const conversionFactor = retailSubtotal / totalBaseCost;
+      mainLineTotal = toTwoDecimals(mainBlindCost * conversionFactor);
+      sideTrimTotal = toTwoDecimals(sideTrimCost * conversionFactor);
+      accessoryTotal = toTwoDecimals(accessoryBaseCost * conversionFactor);
+
+      const recalculatedSubtotal = toTwoDecimals(mainLineTotal + sideTrimTotal + accessoryTotal);
+      const remainder = toTwoDecimals(retailSubtotal - recalculatedSubtotal);
+
+      if (Math.abs(remainder) >= 0.01) {
+        if (accessoryBaseCost > 0) {
+          accessoryTotal = toTwoDecimals(accessoryTotal + remainder);
+        } else if (sideTrimCost > 0) {
+          sideTrimTotal = toTwoDecimals(sideTrimTotal + remainder);
+        } else {
+          mainLineTotal = toTwoDecimals(mainLineTotal + remainder);
+        }
+      }
+    } else {
+      mainLineTotal = toTwoDecimals(retailSubtotal);
+    }
+
+    const sideTrimQuantity = sideTrimCost > 0 ? 1 : 0;
+    const accessoryQuantity = accessoryBaseCost > 0 ? 1 : 0;
+    const mainUnitPrice = blindQuantity > 0 ? toTwoDecimals(mainLineTotal / blindQuantity) : 0;
+    const sideTrimUnit = sideTrimQuantity ? toTwoDecimals(sideTrimTotal / sideTrimQuantity) : 0;
+    const accessoryUnit = accessoryQuantity ? accessoryTotal : 0;
+
+    const blindSpecificationLines = [
+      `Width: ${quote.blind1.dimensions.width}mm`,
+      `Drop: ${quote.blind1.dimensions.length}mm`,
+      `Fabric: ${fabricTypeLabel} (${quote.fabric.color})`,
+      `Hardware: ${quote.hardware}`,
+      `Power: ${quote.components.power}`,
+      `Controls: ${quote.components.handset}${quote.components.wallSwitch !== 'No Wall Switch' ? `, ${quote.components.wallSwitch}` : ''}`
+    ];
+
+    if (quote.blind2) {
+      blindSpecificationLines.push(
+        `Blind 2: ${quote.blind2.dimensions.width}mm × ${quote.blind2.dimensions.length}mm`
+      );
+    }
+
+    const sideTrimSpecificationLines = [
+      `Colour: ${hardwareOptions[hardwareColor]}`,
+      `Coverage: ${quote.totalRecess.width}mm × ${quote.totalRecess.length}mm`,
+      quote.tBar ? `Includes T-Bar (${quote.tBar.color})` : 'T-Bar not required'
+    ];
+
+    const accessorySpecificationLines = [
+      `Power Supply: ${quote.components.power}`,
+      `Handset: ${quote.components.handset}`,
+      `Wall Switch: ${quote.components.wallSwitch}`,
+      'Delivery: UK Courier Service'
+    ];
+
+    const htmlContent = `
+      <div style="font-family: 'Open Sans', Arial, sans-serif; color: #1f2937;">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #0f766e; padding-bottom: 16px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <img src="/assets/scottish-shutter-company-logo.png" alt="Scottish Shutter Company" style="height: 60px; width: auto; border-radius: 12px;" />
+            <div>
+              <div style="font-size: 24px; font-weight: 700; color: #0f766e;">THE SCOTTISH SHUTTER COMPANY</div>
+              <div style="font-size: 14px; color: #4b5563; letter-spacing: 0.1em; text-transform: uppercase;">Premium Window Shading Specialists</div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 28px; font-weight: 700; color: #0f766e; letter-spacing: 0.1em;">QUOTATION</div>
+            <div style="font-size: 12px; color: #6b7280;">SonaSky Pricing Calculator v${securityConfig.version}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+          <div>
+            <div style="font-size: 12px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em;">Quote Reference</div>
+            <div style="font-size: 16px; font-weight: 600; color: #111827;">${quoteReference}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em;">Date</div>
+            <div style="font-size: 16px; font-weight: 600; color: #111827;">${formattedDate}</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+          <div style="flex: 1; background: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <div style="font-size: 12px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Customer</div>
+            <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 8px;">${safeText(customerDetails.name, 'Client Name')}</div>
+            <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">${addressHtml}</div>
+          </div>
+          <div style="width: 240px; background: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb;">
+            <div style="font-size: 12px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Contact Details</div>
+            <div style="font-size: 14px; color: #4b5563; margin-bottom: 8px;"><strong>Phone:</strong> ${safeText(customerDetails.phone, 'To be confirmed')}</div>
+            <div style="font-size: 14px; color: #4b5563;"><strong>Email:</strong> ${safeText(customerDetails.email, 'To be confirmed')}</div>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 32px;">
+          <thead>
+            <tr style="background: #0f766e; color: #ffffff;">
+              <th style="padding: 12px; text-align: left; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Description</th>
+              <th style="padding: 12px; text-align: left; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Specification</th>
+              <th style="padding: 12px; text-align: center; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Qty</th>
+              <th style="padding: 12px; text-align: right; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Unit Price</th>
+              <th style="padding: 12px; text-align: right; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 16px 12px; font-weight: 600;">SonaSky Motorised Cellular Blind</td>
+              <td style="padding: 16px 12px; font-size: 13px; color: #4b5563; line-height: 1.6;">
+                ${blindSpecificationLines.join('<br />')}
+              </td>
+              <td style="padding: 16px 12px; text-align: center; font-weight: 600;">${blindQuantity}</td>
+              <td style="padding: 16px 12px; text-align: right;">${toMoney(mainUnitPrice)}</td>
+              <td style="padding: 16px 12px; text-align: right; font-weight: 600;">${toMoney(mainLineTotal)}</td>
+            </tr>
+            ${sideTrimQuantity ? `
+              <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 16px 12px; font-weight: 600;">Side Trims</td>
+                <td style="padding: 16px 12px; font-size: 13px; color: #4b5563; line-height: 1.6;">
+                  ${sideTrimSpecificationLines.join('<br />')}
+                </td>
+                <td style="padding: 16px 12px; text-align: center; font-weight: 600;">${sideTrimQuantity}</td>
+                <td style="padding: 16px 12px; text-align: right;">${toMoney(sideTrimUnit)}</td>
+                <td style="padding: 16px 12px; text-align: right; font-weight: 600;">${toMoney(sideTrimTotal)}</td>
+              </tr>
+            ` : ''}
+            ${accessoryQuantity ? `
+              <tr>
+                <td style="padding: 16px 12px; font-weight: 600;">Power, Controls & Delivery</td>
+                <td style="padding: 16px 12px; font-size: 13px; color: #4b5563; line-height: 1.6;">
+                  ${accessorySpecificationLines.join('<br />')}
+                </td>
+                <td style="padding: 16px 12px; text-align: center; font-weight: 600;">${accessoryQuantity}</td>
+                <td style="padding: 16px 12px; text-align: right;">${toMoney(accessoryUnit)}</td>
+                <td style="padding: 16px 12px; text-align: right; font-weight: 600;">${toMoney(accessoryTotal)}</td>
+              </tr>
+            ` : ''}
+          </tbody>
+        </table>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 32px;">
+          <table style="width: 320px; border-collapse: collapse;">
+            <tbody>
+              <tr>
+                <td style="padding: 8px 12px; font-size: 14px; color: #4b5563;">Subtotal</td>
+                <td style="padding: 8px 12px; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">${toMoney(retailSubtotal)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; font-size: 14px; color: #4b5563;">VAT (20%)</td>
+                <td style="padding: 8px 12px; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">${toMoney(vatAmount)}</td>
+              </tr>
+              <tr style="border-top: 2px solid #0f766e;">
+                <td style="padding: 16px 12px; font-size: 16px; font-weight: 700; color: #0f766e;">Total Inc VAT</td>
+                <td style="padding: 16px 12px; font-size: 16px; font-weight: 700; color: #0f766e; text-align: right;">${toMoney(totalWithVat)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+          <div style="font-size: 12px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Terms & Conditions</div>
+          <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #4b5563; line-height: 1.6;">
+            <li>Valid for 30 days</li>
+            <li>Includes supply and professional installation</li>
+            <li>Lead time: 4-6 weeks</li>
+            <li>50% deposit required to secure manufacturing</li>
+            <li>Manufactured by SONA to British standards</li>
+            <li>Comprehensive warranty provided upon completion</li>
+            <li>Pre-installation survey visit available on request</li>
+          </ul>
+        </div>
+
+        <div style="text-align: center; font-size: 14px; color: #4b5563; line-height: 1.6;">
+          <div style="font-weight: 700; color: #0f766e;">The Scottish Shutter Company</div>
+          <div>Showrooms: Dundee &amp; Edinburgh &nbsp;|&nbsp; <a href="https://www.scottishshutters.co.uk" style="color: #0f766e; text-decoration: none;">www.scottishshutters.co.uk</a></div>
+          <div>Email: <a href="mailto:info@scottishshutters.co.uk" style="color: #0f766e; text-decoration: none;">info@scottishshutters.co.uk</a> &nbsp;|&nbsp; Tel: 01382 761400</div>
+        </div>
+      </div>
+    `;
+
+    const pdfOptions = {
+      margin: [10, 10, 20, 10],
+      filename: `SSC-Quote-${quoteReference}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(pdfOptions).from(htmlContent).save();
+  };
 
   // Automatically enable side trims for duo-inward systems (required)
   useEffect(() => {
@@ -838,16 +1119,27 @@ const SonaCalculator = () => {
             </label>
           </div>
           
-          <button
-            type="button"
-            onClick={() => setShowSystemGuide(true)}
-            className="mt-4 text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
-            Need help choosing? View System Selection Guide
-          </button>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setShowSystemGuide(true)}
+              className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              Need help choosing? View System Selection Guide
+            </button>
+            <button
+              type="button"
+              onClick={handleGeneratePdf}
+              disabled={!quote}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${quote ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white hover:from-teal-600 hover:to-emerald-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-70'}`}
+            >
+              <span role="img" aria-hidden="true">📄</span>
+              Generate Quote PDF
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -1227,6 +1519,81 @@ const SonaCalculator = () => {
 
           {/* Output Cards */}
           <section className="xl:col-span-2">
+            {/* Customer Details Card */}
+            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 mb-6">
+              <button
+                type="button"
+                onClick={() => setShowCustomerDetails((prev) => !prev)}
+                className="flex items-center justify-between w-full"
+              >
+                <div className="flex items-center space-x-3 text-left">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center">👤</div>
+                  <div>
+                    <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Customer Details</h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {customerDetails.name || customerDetails.email
+                        ? `${customerDetails.name || 'Customer'}${customerDetails.email ? ` • ${customerDetails.email}` : ''}`
+                        : 'Add customer information to include on the quote PDF.'}
+                    </p>
+                  </div>
+                </div>
+                <svg
+                  className={`w-5 h-5 text-teal-600 transition-transform duration-200 transform ${showCustomerDetails ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showCustomerDetails && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Customer Name</label>
+                    <input
+                      type="text"
+                      value={customerDetails.name}
+                      onChange={(e) => handleCustomerDetailChange('name', e.target.value)}
+                      placeholder="e.g. Jane Smith"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Contact Phone</label>
+                    <input
+                      type="tel"
+                      value={customerDetails.phone}
+                      onChange={(e) => handleCustomerDetailChange('phone', e.target.value)}
+                      placeholder="e.g. 01382 123 456"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Email Address</label>
+                    <input
+                      type="email"
+                      value={customerDetails.email}
+                      onChange={(e) => handleCustomerDetailChange('email', e.target.value)}
+                      placeholder="e.g. jane@clientcompany.com"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Installation Address</label>
+                    <textarea
+                      rows={4}
+                      value={customerDetails.address}
+                      onChange={(e) => handleCustomerDetailChange('address', e.target.value)}
+                      placeholder="Street, City, Postcode"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Quote Summary Card */}
               <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
