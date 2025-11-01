@@ -57,6 +57,21 @@ try {
   
   console.log(`📝 Version info saved to src/version-info.json`);
   
+  // Update security-config.js
+  const securityConfigPath = path.join(__dirname, '..', 'src', 'security-config.js');
+  try {
+    let securityConfig = fs.readFileSync(securityConfigPath, 'utf8');
+    // Replace version line - handles both single and double quotes
+    securityConfig = securityConfig.replace(
+      /version:\s*['"][\d.]+['"]/,
+      `version: '${newVersion}'`
+    );
+    fs.writeFileSync(securityConfigPath, securityConfig);
+    console.log('🔒 Security config updated to', newVersion);
+  } catch (secConfigError) {
+    console.warn('⚠️  Could not update security-config.js:', secConfigError.message);
+  }
+  
   // Auto-deploy to Vercel if requested
   if (process.env.AUTO_DEPLOY !== 'false') {
     console.log('🚀 Auto-deploying to Vercel...');
