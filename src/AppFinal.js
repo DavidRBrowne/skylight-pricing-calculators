@@ -146,7 +146,6 @@ const SonaCalculator = () => {
       return Math.round(safeValue * 100) / 100;
     };
 
-    const buyTotal = quote.pricing.buyTotal || 0;
     const retailSubtotal = toTwoDecimals(quote.pricing.retailTotal || 0);
     const totalWithVat = toTwoDecimals(quote.pricing.retailTotalIncVAT || 0);
     const vatAmount = toTwoDecimals(totalWithVat - retailSubtotal);
