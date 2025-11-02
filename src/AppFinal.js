@@ -476,9 +476,32 @@ const SonaCalculator = () => {
         return;
       }
       
-      // Validate maximum dimensions
+      // Validate maximum dimensions with intelligent recommendations
       if (totalLength > maxLength || totalWidth > maxWidth) {
-        setErrors([`Dimensions cannot exceed ${maxWidth}mm × ${maxLength}mm`]);
+        let recommendation = '';
+        
+        if (systemType === 'single') {
+          // Single blind exceeded - check if it fits other configurations
+          if (totalWidth <= 3000 && totalLength <= 10000) {
+            recommendation = 'Try Sona Sky Duo Inward configuration (max 3000×10000mm)';
+          } else if (totalWidth <= 6000 && totalLength <= 5000) {
+            recommendation = 'Try Sona Sky Duo Parallel configuration (max 6000×5000mm)';
+          } else {
+            recommendation = 'Dimensions too large for any configuration';
+          }
+        } else if (systemType === 'duo-inward') {
+          // Duo Inward exceeded - check if it fits parallel
+          if (totalWidth <= 6000 && totalLength <= 5000) {
+            recommendation = 'Try Sona Sky Duo Parallel configuration (max 6000×5000mm)';
+          } else {
+            recommendation = 'Dimensions exceed maximum for all configurations';
+          }
+        } else if (systemType === 'duo-parallel') {
+          // Duo Parallel exceeded - no other option
+          recommendation = 'Dimensions exceed maximum for all configurations';
+        }
+        
+        setErrors([`⚠ Dimensions exceed ${maxWidth}mm × ${maxLength}mm. ${recommendation}`]);
         setQuote(null);
         return;
       }
@@ -1153,6 +1176,18 @@ const SonaCalculator = () => {
                 </div>
               </div>
 
+              {/* Error Display */}
+              {errors.length > 0 && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <h3 className="text-red-800 font-medium mb-2">Please fix the following errors:</h3>
+                  <ul className="text-red-700 text-sm space-y-1">
+                    {errors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {/* Step 2: Fabric Selection */}
               <div className="mb-6">
                 <div className="flex items-center mb-4">
@@ -1435,18 +1470,6 @@ const SonaCalculator = () => {
                   ? "✅ Quote updated automatically" 
                   : "📝 Enter dimensions to see pricing"}
               </div>
-
-              {/* Error Display */}
-              {errors.length > 0 && (
-                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <h3 className="text-red-800 font-medium mb-2">Please fix the following errors:</h3>
-                  <ul className="text-red-700 text-sm space-y-1">
-                    {errors.map((error, index) => (
-                      <li key={index}>• {error}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
           </section>
 
