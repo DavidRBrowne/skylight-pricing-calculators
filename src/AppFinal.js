@@ -1339,6 +1339,12 @@ const SonaCalculator = () => {
                 <p className="text-lg mt-1" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>Skylight Blind Calculator</p>
                 <div className="md:hidden mt-2">
                   <p className="text-xs" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company - v{securityConfig.version}</p>
+                  {DEMO_CONFIG.enabled && (
+                    <div className="mt-2">
+                      <p className="text-xs font-bold" style={{ color: '#ef4444' }}>DEMO VERSION</p>
+                      <p className="text-xs" style={{ color: '#ef4444' }}>Expires: November 9, 2025</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1347,6 +1353,12 @@ const SonaCalculator = () => {
                 <p className="text-sm" style={{ color: brandConfig.colors.black, fontFamily: brandConfig.fonts.light }}>The Scottish Shutter Company</p>
                 <p className="text-sm font-medium" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Professional Skylight Solutions</p>
                 <p className="text-xs mt-1" style={{ color: brandConfig.colors.grey, fontFamily: brandConfig.fonts.light }}>v{securityConfig.version}</p>
+                {DEMO_CONFIG.enabled && (
+                  <div className="mt-2 text-right">
+                    <p className="text-xs font-bold" style={{ color: '#ef4444' }}>DEMO VERSION</p>
+                    <p className="text-xs" style={{ color: '#ef4444' }}>Expires: November 9, 2025</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
