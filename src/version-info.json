@@ -1,11 +1,6 @@
 {
-  "version": "1.3.3",
-  "timestamp": "2025-11-02T10:48:02.028Z",
+  "version": "1.3.4",
+  "timestamp": "2025-11-02T11:03:28.895Z",
   "gitCommit": "unknown",
-  "gitBranch": "unknown",
-  "lastDeployment": {
-    "url": "https://sona-sky-pricing-calculator-nzyhcwnk7-david-brownes-projects.vercel.app",
-    "timestamp": "2025-11-02T10:51:05.162Z",
-    "status": "success"
-  }
+  "gitBranch": "unknown"
 }
