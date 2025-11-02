@@ -3,6 +3,7 @@ import brandConfig from './brand-config';
 import sscLogoPng from './assets/The Scottish Shutter Company Logo 2024 Square copy.png';
 // import packageJson from '../package.json'; // Removed - using securityConfig.version instead
 import securityConfig, { securityMiddleware } from './security-config';
+import { DEMO_CONFIG } from './demo-config';
 import html2pdf from 'html2pdf.js';
 const SonaCalculator = () => {
   console.log('NEW VERSION LOADED - BLUE BACKGROUND WITH GRID LAYOUT');
@@ -66,6 +67,36 @@ const SonaCalculator = () => {
       }
     };
   }, []);
+
+  // Demo initialization: Check password, expiry, and terms
+  useEffect(() => {
+    if (!DEMO_CONFIG.enabled) {
+      setShowPasswordModal(false);
+      return;
+    }
+
+    // Check if demo has expired
+    const expiryDate = new Date(DEMO_CONFIG.expiryDate);
+    const now = new Date();
+    if (now > expiryDate) {
+      setDemoExpired(true);
+      return;
+    }
+
+    // Check if password already authenticated in session
+    const sessionAuth = sessionStorage.getItem('demo-authenticated');
+    if (sessionAuth === 'true') {
+      setShowPasswordModal(false);
+      
+      // Check if terms already accepted
+      const termsAuth = localStorage.getItem('demo-terms-accepted');
+      if (termsAuth !== 'true') {
+        setShowTermsModal(true);
+      } else {
+        setTermsAccepted(true);
+      }
+    }
+  }, []);
   
   // State management
   const [systemType, setSystemType] = useState('single'); // 'single', 'duo-inward', 'duo-parallel'
@@ -76,6 +107,12 @@ const SonaCalculator = () => {
   const [showHardwareModal, setShowHardwareModal] = useState(false);
   const [showPowerModal, setShowPowerModal] = useState(false);
   const [showControlModal, setShowControlModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(true);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [demoExpired, setDemoExpired] = useState(false);
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     address: '',
@@ -95,6 +132,34 @@ const SonaCalculator = () => {
   const [tBarColor, setTBarColor] = useState('white');
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (password === DEMO_CONFIG.password) {
+      sessionStorage.setItem('demo-authenticated', 'true');
+      setShowPasswordModal(false);
+      
+      // Check if terms already accepted
+      const termsAuth = localStorage.getItem('demo-terms-accepted');
+      if (termsAuth !== 'true') {
+        setShowTermsModal(true);
+      } else {
+        setTermsAccepted(true);
+      }
+    } else {
+      setPasswordError('Incorrect password. Please try again.');
+      setPassword('');
+    }
+  };
+
+  const handleTermsAccept = () => {
+    if (!document.getElementById('terms-checkbox').checked) {
+      return;
+    }
+    localStorage.setItem('demo-terms-accepted', 'true');
+    setTermsAccepted(true);
+    setShowTermsModal(false);
+  };
 
   const handleCustomerDetailChange = (field, value) => {
     setCustomerDetails((prev) => ({ ...prev, [field]: value }));
@@ -192,8 +257,15 @@ const SonaCalculator = () => {
     const totalQuantity = 1;
     const totalLinePrice = retailSubtotal;
 
+    const demoWatermark = DEMO_CONFIG.enabled ? `
+      <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 72px; color: rgba(0, 0, 0, 0.1); font-weight: bold; pointer-events: none; z-index: 1000; white-space: nowrap;">
+        ${DEMO_CONFIG.pdfWatermark}
+      </div>
+    ` : '';
+
     const htmlContent = `
-      <div style="font-family: 'Open Sans', Arial, sans-serif; color: #1f2937; padding: 20px;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; color: #1f2937; padding: 20px; position: relative;">
+        ${demoWatermark}
         <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; margin-bottom: 16px;">
           <div style="display: flex; align-items: center; gap: 16px;">
             <img src="/scottish-shutter-company-logo.png" alt="Scottish Shutter Company Logo" style="height: 60px; width: auto;" />
@@ -1033,6 +1105,117 @@ const SonaCalculator = () => {
     </div>
   );
 
+  const PasswordModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-8">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Demo Access</h2>
+          <p className="text-gray-600">Please enter the password to access the demo</p>
+        </div>
+        
+        <form onSubmit={handlePasswordSubmit}>
+          <div className="mb-4">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError('');
+              }}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              placeholder="Enter password"
+              autoFocus
+            />
+            {passwordError && (
+              <p className="mt-2 text-sm text-red-600">{passwordError}</p>
+            )}
+          </div>
+          
+          <button
+            type="submit"
+            className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 font-medium"
+          >
+            Access Demo
+          </button>
+        </form>
+        
+        <p className="mt-4 text-xs text-gray-500 text-center">
+          Demo expires: November 9, 2025
+        </p>
+      </div>
+    </div>
+  );
+
+  const TermsModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-2xl max-h-[90vh] overflow-y-auto p-8">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Demo Terms of Use</h2>
+          <div className="border-t-2 border-teal-500 w-20 mb-4"></div>
+        </div>
+        
+        <div className="text-gray-700 space-y-4 mb-6">
+          <p>
+            © 2025 Scottish Shutter Company. This demo is provided for evaluation purposes only.
+          </p>
+          <p>
+            Unauthorized copying, reverse engineering, or commercial use is strictly prohibited.
+          </p>
+          <p>
+            <strong>Demo expires: November 9, 2025</strong>
+          </p>
+        </div>
+        
+        <div className="mb-6">
+          <label className="flex items-start">
+            <input
+              id="terms-checkbox"
+              type="checkbox"
+              className="mt-1 mr-3 w-5 h-5 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
+            />
+            <span className="text-gray-700">
+              I have read and agree to the terms of use for this demo
+            </span>
+          </label>
+        </div>
+        
+        <button
+          onClick={handleTermsAccept}
+          className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 font-medium"
+        >
+          Accept Terms & Continue
+        </button>
+      </div>
+    </div>
+  );
+
+  const ExpiredModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-8 text-center">
+        <div className="mb-6">
+          <svg className="mx-auto h-16 w-16 text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Demo Expired</h2>
+        </div>
+        
+        <div className="text-gray-700 mb-6">
+          <p className="mb-2">This demo has expired.</p>
+          <p>Contact Scottish Shutter Company for access.</p>
+        </div>
+        
+        <div className="border-t border-gray-200 pt-6">
+          <p className="text-sm text-gray-600">
+            <strong>The Scottish Shutter Company</strong><br/>
+            www.scottishshutters.co.uk<br/>
+            Email: info@scottishshutters.co.uk<br/>
+            Tel: 01382 761400
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
   const SideTrimsInfoModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-2xl max-h-[90vh] overflow-y-auto p-6">
@@ -1134,6 +1317,15 @@ const SonaCalculator = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: brandConfig.colors.lightGrey, color: brandConfig.colors.black, fontFamily: brandConfig.fonts.body }}>
+      {/* Demo Modals */}
+      {showPasswordModal && <PasswordModal />}
+      {showTermsModal && <TermsModal />}
+      {demoExpired && <ExpiredModal />}
+      
+      {/* Password protection: Don't show calculator until authenticated */}
+      {(showPasswordModal || (!termsAccepted && DEMO_CONFIG.enabled)) && !demoExpired ? null : (
+        <>
+
       {/* Header with logo and title */}
       <header className="bg-white shadow-lg border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-6">
@@ -1918,6 +2110,20 @@ const SonaCalculator = () => {
         
         {/* Control Modal */}
         {showControlModal && <ControlModal />}
+
+        {/* Demo Footer Watermark */}
+        {DEMO_CONFIG.enabled && (
+          <footer className="bg-red-100 border-t-2 border-red-400 py-3 mt-8">
+            <div className="max-w-7xl mx-auto px-6 text-center">
+              <p className="text-red-800 font-bold text-sm">
+                {DEMO_CONFIG.watermark} - Expires November 9, 2025
+              </p>
+            </div>
+          </footer>
+        )}
+
+        </>
+      )}
       </div>
     );
 };
