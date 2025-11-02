@@ -1072,15 +1072,6 @@ const SonaCalculator = () => {
               </svg>
               Need help choosing? View System Selection Guide
             </button>
-            <button
-              type="button"
-              onClick={handleGeneratePdf}
-              disabled={!quote}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${quote ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white hover:from-teal-600 hover:to-emerald-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-70'}`}
-            >
-              <span role="img" aria-hidden="true">📄</span>
-              Generate Quote PDF
-            </button>
           </div>
         </div>
 
@@ -1461,81 +1452,6 @@ const SonaCalculator = () => {
 
           {/* Output Cards */}
           <section className="xl:col-span-2">
-            {/* Customer Details Card */}
-            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 mb-6">
-              <button
-                type="button"
-                onClick={() => setShowCustomerDetails((prev) => !prev)}
-                className="flex items-center justify-between w-full"
-              >
-                <div className="flex items-center space-x-3 text-left">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center">👤</div>
-                  <div>
-                    <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Customer Details</h2>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {customerDetails.name || customerDetails.email
-                        ? `${customerDetails.name || 'Customer'}${customerDetails.email ? ` • ${customerDetails.email}` : ''}`
-                        : 'Add customer information to include on the quote PDF.'}
-                    </p>
-                  </div>
-                </div>
-                <svg
-                  className={`w-5 h-5 text-teal-600 transition-transform duration-200 transform ${showCustomerDetails ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {showCustomerDetails && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Customer Name</label>
-                    <input
-                      type="text"
-                      value={customerDetails.name}
-                      onChange={(e) => handleCustomerDetailChange('name', e.target.value)}
-                      placeholder="e.g. Jane Smith"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Contact Phone</label>
-                    <input
-                      type="tel"
-                      value={customerDetails.phone}
-                      onChange={(e) => handleCustomerDetailChange('phone', e.target.value)}
-                      placeholder="e.g. 01382 123 456"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Email Address</label>
-                    <input
-                      type="email"
-                      value={customerDetails.email}
-                      onChange={(e) => handleCustomerDetailChange('email', e.target.value)}
-                      placeholder="e.g. jane@clientcompany.com"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Installation Address</label>
-                    <textarea
-                      rows={4}
-                      value={customerDetails.address}
-                      onChange={(e) => handleCustomerDetailChange('address', e.target.value)}
-                      placeholder="Street, City, Postcode"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Quote Summary Card */}
               <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
@@ -1681,6 +1597,94 @@ const SonaCalculator = () => {
                     <p>Enter dimensions to see retail pricing</p>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Customer Details Card */}
+            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowCustomerDetails((prev) => !prev)}
+                className="flex items-center justify-between w-full"
+              >
+                <div className="flex items-center space-x-3 text-left">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center">👤</div>
+                  <div>
+                    <h2 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal, fontFamily: brandConfig.fonts.semibold }}>Customer Details</h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {customerDetails.name || customerDetails.email
+                        ? `${customerDetails.name || 'Customer'}${customerDetails.email ? ` • ${customerDetails.email}` : ''}`
+                        : 'Add customer information to include on the quote PDF.'}
+                    </p>
+                  </div>
+                </div>
+                <svg
+                  className={`w-5 h-5 text-teal-600 transition-transform duration-200 transform ${showCustomerDetails ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showCustomerDetails && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Customer Name</label>
+                    <input
+                      type="text"
+                      value={customerDetails.name}
+                      onChange={(e) => handleCustomerDetailChange('name', e.target.value)}
+                      placeholder="e.g. Jane Smith"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Contact Phone</label>
+                    <input
+                      type="tel"
+                      value={customerDetails.phone}
+                      onChange={(e) => handleCustomerDetailChange('phone', e.target.value)}
+                      placeholder="e.g. 01382 123 456"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Email Address</label>
+                    <input
+                      type="email"
+                      value={customerDetails.email}
+                      onChange={(e) => handleCustomerDetailChange('email', e.target.value)}
+                      placeholder="e.g. jane@clientcompany.com"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Installation Address</label>
+                    <textarea
+                      rows={4}
+                      value={customerDetails.address}
+                      onChange={(e) => handleCustomerDetailChange('address', e.target.value)}
+                      placeholder="Street, City, Postcode"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Generate PDF Button */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={handleGeneratePdf}
+                  disabled={!quote}
+                  className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-base font-medium transition-colors ${quote ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white hover:from-teal-600 hover:to-emerald-600' : 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-70'}`}
+                >
+                  <span role="img" aria-hidden="true">📄</span>
+                  Generate Quote PDF
+                </button>
               </div>
             </div>
           </section>
