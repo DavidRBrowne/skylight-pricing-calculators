@@ -3,7 +3,7 @@
 
 export const securityConfig = {
   // Version lock
-  version: '1.3.1',
+  version: '1.3.3',
   locked: false,
   allowUpdates: true,
   
