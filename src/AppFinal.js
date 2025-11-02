@@ -111,15 +111,6 @@ const SonaCalculator = () => {
     const quoteReference = `SSC-${currentDate.getFullYear()}-${randomDigits}`;
 
     const fabricTypeLabel = quote.fabric.type === 'blackout' ? 'Blackout' : 'Dimout';
-    const blindQuantity = quote.systemType === 'single' ? 1 : 2;
-    const addressHtml = customerDetails.address
-      ? customerDetails.address
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/\n/g, '<br />')
-      : 'Provided upon acceptance';
 
     const safeText = (value, fallback = 'Not provided') => {
       if (!value || value.trim() === '') {
@@ -157,39 +148,6 @@ const SonaCalculator = () => {
       + (quote.pricing.wallSwitch || 0)
       + (quote.pricing.shipping || 0);
 
-    const totalBaseCost = mainBlindCost + sideTrimCost + accessoryBaseCost;
-    let mainLineTotal = 0;
-    let sideTrimTotal = 0;
-    let accessoryTotal = 0;
-
-    if (totalBaseCost > 0 && retailSubtotal > 0) {
-      const conversionFactor = retailSubtotal / totalBaseCost;
-      mainLineTotal = toTwoDecimals(mainBlindCost * conversionFactor);
-      sideTrimTotal = toTwoDecimals(sideTrimCost * conversionFactor);
-      accessoryTotal = toTwoDecimals(accessoryBaseCost * conversionFactor);
-
-      const recalculatedSubtotal = toTwoDecimals(mainLineTotal + sideTrimTotal + accessoryTotal);
-      const remainder = toTwoDecimals(retailSubtotal - recalculatedSubtotal);
-
-      if (Math.abs(remainder) >= 0.01) {
-        if (accessoryBaseCost > 0) {
-          accessoryTotal = toTwoDecimals(accessoryTotal + remainder);
-        } else if (sideTrimCost > 0) {
-          sideTrimTotal = toTwoDecimals(sideTrimTotal + remainder);
-        } else {
-          mainLineTotal = toTwoDecimals(mainLineTotal + remainder);
-        }
-      }
-    } else {
-      mainLineTotal = toTwoDecimals(retailSubtotal);
-    }
-
-    const sideTrimQuantity = sideTrimCost > 0 ? 1 : 0;
-    const accessoryQuantity = accessoryBaseCost > 0 ? 1 : 0;
-    const mainUnitPrice = blindQuantity > 0 ? toTwoDecimals(mainLineTotal / blindQuantity) : 0;
-    const sideTrimUnit = sideTrimQuantity ? toTwoDecimals(sideTrimTotal / sideTrimQuantity) : 0;
-    const accessoryUnit = accessoryQuantity ? accessoryTotal : 0;
-
     const blindSpecificationLines = [
       `Width: ${quote.blind1.dimensions.width}mm`,
       `Drop: ${quote.blind1.dimensions.length}mm`,
@@ -220,9 +178,11 @@ const SonaCalculator = () => {
 
     // Build complete specification combining all blind details
     const allSpecificationLines = [...blindSpecificationLines];
+    const sideTrimQuantity = sideTrimCost > 0 ? 1 : 0;
     if (sideTrimQuantity) {
       allSpecificationLines.push(...sideTrimSpecificationLines);
     }
+    const accessoryQuantity = accessoryBaseCost > 0 ? 1 : 0;
     if (accessoryQuantity) {
       allSpecificationLines.push(...accessorySpecificationLines);
     }
