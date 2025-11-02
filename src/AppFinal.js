@@ -72,6 +72,7 @@ const SonaCalculator = () => {
   const [showSystemGuide, setShowSystemGuide] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showSideTrimsInfo, setShowSideTrimsInfo] = useState(false);
+  const [showFabricModal, setShowFabricModal] = useState(false);
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     address: '',
@@ -864,6 +865,41 @@ const SonaCalculator = () => {
     </div>
   );
 
+  const FabricModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-5xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-semibold text-teal-600">
+            Sona Fabric Swatches
+          </h2>
+          <button
+            onClick={() => setShowFabricModal(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <img 
+            src="/images/sona/sona-fabric-swatches.png" 
+            alt="Sona Fabric Swatches" 
+            className="w-full max-w-[90vw] max-h-[80vh] object-contain mx-auto"
+          />
+        </div>
+
+        <button
+          onClick={() => setShowFabricModal(false)}
+          className="mt-6 w-full bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
   const ImageModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="relative max-w-6xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
@@ -1248,6 +1284,16 @@ const SonaCalculator = () => {
                       <option value="sand">Sand</option>
                       <option value="night">Night</option>
                     </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowFabricModal(true)}
+                      className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1 mt-2"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Need help choosing? View fabric swatches
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1722,6 +1768,9 @@ const SonaCalculator = () => {
         
         {/* Side Trims Info Modal */}
         {showSideTrimsInfo && <SideTrimsInfoModal />}
+        
+        {/* Fabric Modal */}
+        {showFabricModal && <FabricModal />}
       </div>
     );
 };
