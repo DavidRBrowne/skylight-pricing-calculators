@@ -141,13 +141,6 @@ const SonaCalculator = () => {
     const totalWithVat = toTwoDecimals(quote.pricing.retailTotalIncVAT || 0);
     const vatAmount = toTwoDecimals(totalWithVat - retailSubtotal);
 
-    const mainBlindCost = (quote.pricing.blind1 || 0) + (quote.pricing.blind2 || 0);
-    const sideTrimCost = quote.pricing.sideTrims || 0;
-    const accessoryBaseCost = (quote.pricing.power?.total || 0)
-      + (quote.pricing.handset || 0)
-      + (quote.pricing.wallSwitch || 0)
-      + (quote.pricing.shipping || 0);
-
     const blindSpecificationLines = [
       `Width: ${quote.blind1.dimensions.width}mm`,
       `Drop: ${quote.blind1.dimensions.length}mm`,
@@ -178,10 +171,14 @@ const SonaCalculator = () => {
 
     // Build complete specification combining all blind details
     const allSpecificationLines = [...blindSpecificationLines];
-    const sideTrimQuantity = sideTrimCost > 0 ? 1 : 0;
+    const sideTrimQuantity = (quote.pricing.sideTrims || 0) > 0 ? 1 : 0;
     if (sideTrimQuantity) {
       allSpecificationLines.push(...sideTrimSpecificationLines);
     }
+    const accessoryBaseCost = (quote.pricing.power?.total || 0)
+      + (quote.pricing.handset || 0)
+      + (quote.pricing.wallSwitch || 0)
+      + (quote.pricing.shipping || 0);
     const accessoryQuantity = accessoryBaseCost > 0 ? 1 : 0;
     if (accessoryQuantity) {
       allSpecificationLines.push(...accessorySpecificationLines);
