@@ -218,21 +218,35 @@ const SonaCalculator = () => {
       'Delivery: UK Courier Service'
     ];
 
+    // Build complete specification combining all blind details
+    const allSpecificationLines = [...blindSpecificationLines];
+    if (sideTrimQuantity) {
+      allSpecificationLines.push(...sideTrimSpecificationLines);
+    }
+    if (accessoryQuantity) {
+      allSpecificationLines.push(...accessorySpecificationLines);
+    }
+
+    // Calculate total quantity and price (everything combined into one line)
+    const totalQuantity = 1;
+    const totalLinePrice = retailSubtotal;
+
     const htmlContent = `
-      <div style="font-family: 'Open Sans', Arial, sans-serif; color: #1f2937;">
-        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #0f766e; padding-bottom: 16px; margin-bottom: 24px;">
+      <div style="font-family: 'Open Sans', Arial, sans-serif; color: #1f2937; padding: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; margin-bottom: 16px;">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <img src="/assets/scottish-shutter-company-logo.png" alt="Scottish Shutter Company" style="height: 60px; width: auto; border-radius: 12px;" />
+            <img src="/scottish-shutter-company-logo.png" alt="Scottish Shutter Company Logo" style="height: 60px; width: auto;" />
             <div>
-              <div style="font-size: 24px; font-weight: 700; color: #0f766e;">THE SCOTTISH SHUTTER COMPANY</div>
-              <div style="font-size: 14px; color: #4b5563; letter-spacing: 0.1em; text-transform: uppercase;">Premium Window Shading Specialists</div>
+              <div style="font-size: 24px; font-weight: 700; color: #14b8a6;">THE SCOTTISH SHUTTER COMPANY</div>
+              <div style="font-size: 12px; color: #6b7280; letter-spacing: 0.1em;">PREMIUM WINDOW SHADING SPECIALISTS</div>
             </div>
           </div>
           <div style="text-align: right;">
             <div style="font-size: 28px; font-weight: 700; color: #0f766e; letter-spacing: 0.1em;">QUOTATION</div>
-            <div style="font-size: 12px; color: #6b7280;">SonaSky Pricing Calculator v${securityConfig.version}</div>
           </div>
         </div>
+        
+        <div style="border-bottom: 2px solid #14b8a6; margin-bottom: 24px;"></div>
 
         <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
           <div>
@@ -245,61 +259,33 @@ const SonaCalculator = () => {
           </div>
         </div>
 
-        <div style="display: flex; gap: 24px; margin-bottom: 24px;">
-          <div style="flex: 1; background: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb;">
-            <div style="font-size: 12px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Customer</div>
-            <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 8px;">${safeText(customerDetails.name, 'Client Name')}</div>
-            <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">${addressHtml}</div>
-          </div>
-          <div style="width: 240px; background: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb;">
-            <div style="font-size: 12px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Contact Details</div>
-            <div style="font-size: 14px; color: #4b5563; margin-bottom: 8px;"><strong>Phone:</strong> ${safeText(customerDetails.phone, 'To be confirmed')}</div>
-            <div style="font-size: 14px; color: #4b5563;"><strong>Email:</strong> ${safeText(customerDetails.email, 'To be confirmed')}</div>
-          </div>
+        <div style="margin-bottom: 24px; line-height: 1.8;">
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">${safeText(customerDetails.name, 'Client Name')}</div>
+          <div style="font-size: 14px; color: #6b7280; font-style: italic; margin-bottom: 4px;">Provided upon acceptance</div>
+          <div style="font-size: 14px; color: #4b5563; margin-top: 8px;">Phone: ${safeText(customerDetails.phone, 'To be confirmed')}</div>
+          <div style="font-size: 14px; color: #4b5563;">Email: ${safeText(customerDetails.email, 'To be confirmed')}</div>
         </div>
 
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 32px;">
           <thead>
-            <tr style="background: #0f766e; color: #ffffff;">
-              <th style="padding: 12px; text-align: left; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Description</th>
-              <th style="padding: 12px; text-align: left; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Specification</th>
-              <th style="padding: 12px; text-align: center; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Qty</th>
-              <th style="padding: 12px; text-align: right; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Unit Price</th>
-              <th style="padding: 12px; text-align: right; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;">Total</th>
+            <tr>
+              <th style="padding: 12px 8px; text-align: left; font-size: 13px; font-weight: 600;">Description</th>
+              <th style="padding: 12px 8px; text-align: left; font-size: 13px; font-weight: 600;">Specification</th>
+              <th style="padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 600;">Qty</th>
+              <th style="padding: 12px 8px; text-align: right; font-size: 13px; font-weight: 600;">Unit Price</th>
+              <th style="padding: 12px 8px; text-align: right; font-size: 13px; font-weight: 600;">Total</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #e5e7eb;">
-              <td style="padding: 16px 12px; font-weight: 600;">SonaSky Motorised Cellular Blind</td>
-              <td style="padding: 16px 12px; font-size: 13px; color: #4b5563; line-height: 1.6;">
-                ${blindSpecificationLines.join('<br />')}
+            <tr style="border-bottom: 1px solid #d1d5db;">
+              <td style="padding: 12px 8px; font-weight: 600;">SonaSky Motorised Cellular Blind</td>
+              <td style="padding: 12px 8px; font-size: 12px; color: #374151; line-height: 1.6;">
+                ${allSpecificationLines.join('<br />')}
               </td>
-              <td style="padding: 16px 12px; text-align: center; font-weight: 600;">${blindQuantity}</td>
-              <td style="padding: 16px 12px; text-align: right;">${toMoney(mainUnitPrice)}</td>
-              <td style="padding: 16px 12px; text-align: right; font-weight: 600;">${toMoney(mainLineTotal)}</td>
+              <td style="padding: 12px 8px; text-align: center; font-weight: 600;">${totalQuantity}</td>
+              <td style="padding: 12px 8px; text-align: right;">${toMoney(totalLinePrice)}</td>
+              <td style="padding: 12px 8px; text-align: right; font-weight: 600;">${toMoney(totalLinePrice)}</td>
             </tr>
-            ${sideTrimQuantity ? `
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 16px 12px; font-weight: 600;">Side Trims</td>
-                <td style="padding: 16px 12px; font-size: 13px; color: #4b5563; line-height: 1.6;">
-                  ${sideTrimSpecificationLines.join('<br />')}
-                </td>
-                <td style="padding: 16px 12px; text-align: center; font-weight: 600;">${sideTrimQuantity}</td>
-                <td style="padding: 16px 12px; text-align: right;">${toMoney(sideTrimUnit)}</td>
-                <td style="padding: 16px 12px; text-align: right; font-weight: 600;">${toMoney(sideTrimTotal)}</td>
-              </tr>
-            ` : ''}
-            ${accessoryQuantity ? `
-              <tr>
-                <td style="padding: 16px 12px; font-weight: 600;">Power, Controls & Delivery</td>
-                <td style="padding: 16px 12px; font-size: 13px; color: #4b5563; line-height: 1.6;">
-                  ${accessorySpecificationLines.join('<br />')}
-                </td>
-                <td style="padding: 16px 12px; text-align: center; font-weight: 600;">${accessoryQuantity}</td>
-                <td style="padding: 16px 12px; text-align: right;">${toMoney(accessoryUnit)}</td>
-                <td style="padding: 16px 12px; text-align: right; font-weight: 600;">${toMoney(accessoryTotal)}</td>
-              </tr>
-            ` : ''}
           </tbody>
         </table>
 
@@ -315,30 +301,30 @@ const SonaCalculator = () => {
                 <td style="padding: 8px 12px; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">${toMoney(vatAmount)}</td>
               </tr>
               <tr style="border-top: 2px solid #0f766e;">
-                <td style="padding: 16px 12px; font-size: 16px; font-weight: 700; color: #0f766e;">Total Inc VAT</td>
-                <td style="padding: 16px 12px; font-size: 16px; font-weight: 700; color: #0f766e; text-align: right;">${toMoney(totalWithVat)}</td>
+                <td style="padding: 16px 12px; font-size: 18px; font-weight: 700; color: #0f766e;">Total Inc VAT</td>
+                <td style="padding: 16px 12px; font-size: 18px; font-weight: 700; color: #0f766e; text-align: right;">${toMoney(totalWithVat)}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-          <div style="font-size: 12px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">Terms & Conditions</div>
-          <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #4b5563; line-height: 1.6;">
-            <li>Valid for 30 days</li>
-            <li>Includes supply and professional installation</li>
-            <li>Lead time: 4-6 weeks</li>
-            <li>50% deposit required to secure manufacturing</li>
-            <li>Manufactured by SONA to British standards</li>
-            <li>Comprehensive warranty provided upon completion</li>
-            <li>Pre-installation survey visit available on request</li>
-          </ul>
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">Terms & Conditions</div>
+          <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+            <div>• Valid for 30 days</div>
+            <div>• Includes supply and professional installation</div>
+            <div>• Lead time: 4-6 weeks</div>
+            <div>• 50% deposit required</div>
+            <div>• Manufactured by SONA to British standards</div>
+            <div>• Comprehensive warranty included</div>
+            <div>• Survey visit available</div>
+          </div>
         </div>
 
-        <div style="text-align: center; font-size: 14px; color: #4b5563; line-height: 1.6;">
+        <div style="text-align: center; font-size: 12px; color: #4b5563; line-height: 1.8;">
           <div style="font-weight: 700; color: #0f766e;">The Scottish Shutter Company</div>
-          <div>Showrooms: Dundee &amp; Edinburgh &nbsp;|&nbsp; <a href="https://www.scottishshutters.co.uk" style="color: #0f766e; text-decoration: none;">www.scottishshutters.co.uk</a></div>
-          <div>Email: <a href="mailto:info@scottishshutters.co.uk" style="color: #0f766e; text-decoration: none;">info@scottishshutters.co.uk</a> &nbsp;|&nbsp; Tel: 01382 761400</div>
+          <div>Showrooms: Dundee &amp; Edinburgh | www.scottishshutters.co.uk</div>
+          <div>Email: info@scottishshutters.co.uk | Tel: 01382 761400</div>
         </div>
       </div>
     `;
