@@ -73,6 +73,9 @@ const SonaCalculator = () => {
   const [showImageModal, setShowImageModal] = useState(false);
   const [showSideTrimsInfo, setShowSideTrimsInfo] = useState(false);
   const [showFabricModal, setShowFabricModal] = useState(false);
+  const [showHardwareModal, setShowHardwareModal] = useState(false);
+  const [showPowerModal, setShowPowerModal] = useState(false);
+  const [showControlModal, setShowControlModal] = useState(false);
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
     address: '',
@@ -900,6 +903,111 @@ const SonaCalculator = () => {
     </div>
   );
 
+  const HardwareModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-5xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-semibold text-teal-600">
+            Hardware RAL Colors
+          </h2>
+          <button
+            onClick={() => setShowHardwareModal(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <img 
+            src="/images/sona/Hardware Colour.png" 
+            alt="Hardware RAL Color Swatches" 
+            className="w-full max-w-[90vw] max-h-[80vh] object-contain mx-auto"
+          />
+        </div>
+
+        <button
+          onClick={() => setShowHardwareModal(false)}
+          className="mt-6 w-full bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
+  const PowerModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-5xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-semibold text-teal-600">
+            Power Supply Options
+          </h2>
+          <button
+            onClick={() => setShowPowerModal(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <img 
+            src="/images/sona/Power Supply.png" 
+            alt="Power Supply Options" 
+            className="w-full max-w-[90vw] max-h-[80vh] object-contain mx-auto"
+          />
+        </div>
+
+        <button
+          onClick={() => setShowPowerModal(false)}
+          className="mt-6 w-full bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
+  const ControlModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-5xl max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-semibold text-teal-600">
+            Control & Handset Options
+          </h2>
+          <button
+            onClick={() => setShowControlModal(false)}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <img 
+            src="/images/sona/Control Options.png" 
+            alt="Control & Handset Options" 
+            className="w-full max-w-[90vw] max-h-[80vh] object-contain mx-auto"
+          />
+        </div>
+
+        <button
+          onClick={() => setShowControlModal(false)}
+          className="mt-6 w-full bg-teal-600 text-white py-2 px-4 rounded hover:bg-teal-700"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+
   const ImageModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="relative max-w-6xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
@@ -1318,6 +1426,16 @@ const SonaCalculator = () => {
                       <option value="black">Black RAL9005</option>
                       <option value="bespoke">Bespoke RAL (POA)</option>
                     </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowHardwareModal(true)}
+                      className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1 mt-2"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Need help choosing? View RAL color swatches
+                    </button>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Power Supply</label>
@@ -1336,6 +1454,16 @@ const SonaCalculator = () => {
                       <option value="sna75">SNA-75-12 Mains Transformer (£48)</option>
                       <option value="sna12151">SNA12151 Mains Transformer (£108)</option>
                     </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowPowerModal(true)}
+                      className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1 mt-2"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Need help choosing? View power supply options
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1360,6 +1488,16 @@ const SonaCalculator = () => {
                       <option value="telis16">Telis 16 (16-channel) (£128)</option>
                       <option value="tahoma">TaHoma Switch (£138)</option>
                     </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowControlModal(true)}
+                      className="text-sm text-teal-600 hover:text-teal-700 flex items-center gap-1 mt-2"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                      Need help choosing? View controller options
+                    </button>
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>Wall Switch</label>
@@ -1771,6 +1909,15 @@ const SonaCalculator = () => {
         
         {/* Fabric Modal */}
         {showFabricModal && <FabricModal />}
+        
+        {/* Hardware Modal */}
+        {showHardwareModal && <HardwareModal />}
+        
+        {/* Power Modal */}
+        {showPowerModal && <PowerModal />}
+        
+        {/* Control Modal */}
+        {showControlModal && <ControlModal />}
       </div>
     );
 };
