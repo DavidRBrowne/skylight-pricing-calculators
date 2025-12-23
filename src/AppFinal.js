@@ -805,6 +805,13 @@ const SonaCalculator = () => {
                     <td className="border p-2 text-center">Recommended</td>
                     <td className="border p-2">Wide openings</td>
                   </tr>
+                  <tr>
+                    <td className="border p-2 font-semibold">Trio - Parallel</td>
+                    <td className="border p-2 text-center">9000mm</td>
+                    <td className="border p-2 text-center">3000mm</td>
+                    <td className="border p-2 text-center">2× Required</td>
+                    <td className="border p-2">Extra-wide openings</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -832,11 +839,22 @@ const SonaCalculator = () => {
           <div>
             <h3 className="text-lg font-semibold mb-2">Duo - Parallel Configuration</h3>
             <p className="text-gray-700 mb-2">
-              Two blinds run side by side independently. With this system the T-bar is optional 
-              but we would almost always recommend it. The maximum width for this system is 6000mm 
+              Two blinds run side by side independently. With this system the T-bar is optional
+              but we would almost always recommend it. The maximum width for this system is 6000mm
               (two 3000mm max blinds side by side) with a maximum drop of 5000mm (that of a single blind).
             </p>
             <p className="text-sm text-gray-600">Maximum size: 6000mm × 5000mm (T-bar strongly recommended)</p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Trio - Parallel Configuration</h3>
+            <p className="text-gray-700 mb-2">
+              Three blinds run side by side for extra-wide openings. This system requires two central
+              T-bars where each pair of blinds meet, and side trims are mandatory. The maximum width
+              for this system is 9000mm (three 3000mm max blinds side by side) with a maximum length
+              of 3000mm.
+            </p>
+            <p className="text-sm text-gray-600">Maximum size: 9000mm × 3000mm (2× T-bars required, side trims mandatory)</p>
           </div>
 
           <div className="border-t pt-6">
@@ -922,7 +940,8 @@ const SonaCalculator = () => {
             <ul className="space-y-2 text-gray-700">
               <li>• Opening up to 3m × 5m? → <strong>Single Blind</strong></li>
               <li>• Opening up to 3m wide but longer than 5m? → <strong>Duo - Inward</strong></li>
-              <li>• Opening wider than 3m? → <strong>Duo - Parallel</strong></li>
+              <li>• Opening 3m - 6m wide? → <strong>Duo - Parallel</strong></li>
+              <li>• Opening 6m - 9m wide? → <strong>Trio - Parallel</strong></li>
             </ul>
           </div>
         </div>
