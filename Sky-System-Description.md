@@ -28,4 +28,4 @@ When retracted, the slim headrail houses the folded cellular fabric. You will no
 
 ## Fabric Choices
 
-Sky blinds are available in two fabric types: Dimout for soft, filtered light, and Blackout for complete darkness – ideal for bedrooms and media rooms. Both fabrics offer excellent thermal properties, helping to keep your space cool in summer and warm in winter.
+Sky blinds are available in two fabric types: Translucent for soft, filtered light, and Room Darkening for complete darkness – ideal for bedrooms and media rooms. Both fabrics offer excellent thermal properties, helping to keep your space cool in summer and warm in winter.
