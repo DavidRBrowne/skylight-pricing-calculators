@@ -1,31 +1,40 @@
 # The Sky System
 
-The Sky system is a motorised cellular blind designed specifically for skylights and overhead glazing. Unlike traditional blinds that hang vertically, Sky blinds travel horizontally across your ceiling, providing elegant light control and thermal insulation for roof windows of almost any size.
+The Sky system is a motorised cellular blind designed specifically for skylights and overhead glazing. Unlike traditional blinds that hang vertically, Sky blinds travel horizontally across your ceiling, giving you elegant light control and added thermal insulation for roof glazing in a wide range of sizes.
 
-## How It Works
+## How it works
 
-Each Sky blind sits on a 25mm shelf that runs around the perimeter of your skylight opening. This shelf provides a clean, finished appearance and masks any gaps between the blind and the surrounding ceiling or wall. When you want light, the blind retracts smoothly into a compact headrail. When you need shade or privacy, it glides effortlessly across the opening at the touch of a button.
+Each Sky blind sits on a slim 25mm shelf that runs around the perimeter of your skylight opening. This creates a clean, finished look and helps mask any small gaps between the blind and the surrounding ceiling or wall.
 
-The blind is powered by a whisper-quiet Somfy motor, operated by remote control or integrated into your smart home system. The hardware is precision-engineered in Germany with a premium textured finish that complements any interior.
+When you want more daylight, the blind retracts smoothly back to the headrail. When you need shade or privacy, it glides across the opening at the touch of a button.
+
+The blind is powered by a whisper-quiet Somfy motor, operated by remote control, and it can be integrated into your smart home system. The hardware is precision-engineered in Germany and finished in a premium textured coating that suits most interiors.
 
 ## Configurations
 
 **Sky Single**
-For openings up to 3 metres wide by 5 metres long. One blind covers the entire opening – the simplest and most popular choice for standard skylights.
+For openings up to 3m wide by 5m long. One blind covers the entire opening, and it's the simplest and most popular choice for standard skylights.
 
-**Sky Duo – Inward**
-For longer openings up to 3 metres wide by 10 metres long. Two blinds travel from opposite ends and meet in the centre, ideal for elongated roof lights and lanterns.
+**Sky Duo, Inward**
+For longer openings up to 3m wide by 10m long. Two blinds travel from opposite ends and meet in the centre, ideal for elongated roof lights and many roof lantern layouts.
 
-**Sky Duo – Parallel**
-For wider openings up to 6 metres wide by 5 metres long. Two blinds sit side by side, each operating independently. The optional shelf and central bar create a seamless, unified appearance.
+**Sky Duo, Parallel**
+For wider openings up to 6m wide by 5m long. Two blinds sit side by side, each operating independently. The optional shelf and central bar create a neat, unified appearance.
 
 **Sky Trio**
-For extra-wide openings up to 9 metres wide by 3 metres long. Three blinds run in parallel, perfect for large glass expanses and feature ceilings.
+For extra-wide openings up to 9m wide by 3m long. Three blinds run in parallel, ideal for large glass expanses and feature ceilings.
 
-## What to Expect
+## What to expect
 
-When retracted, the slim headrail houses the folded cellular fabric. You will notice fine cords running across the opening – these are the drive cords that move the blind and the support cords that keep the fabric travelling straight. The number of cords varies depending on the width of your blind. While visible, they are deliberately understated and quickly become part of the background.
+When the blind is retracted, the cellular fabric is compressed against the headrail, rather than being hidden inside it. At that point, you will also clearly see the spooling cords and the fine nylon support lines running across the opening.
 
-## Fabric Choices
+These cords and supports are essential to how the system works, they keep the fabric travelling straight and under control as it moves. The number of cords varies depending on the width of your blind. They are neat and deliberately understated, but they are visible, especially when the blind is fully open.
 
-Sky blinds are available in two fabric types: Translucent for soft, filtered light, and Room Darkening for complete darkness – ideal for bedrooms and media rooms. Both fabrics offer excellent thermal properties, helping to keep your space cool in summer and warm in winter.
+## Fabric choices
+
+Sky blinds are available in two fabric types:
+
+- **Translucent**, for soft, filtered light
+- **Room darkening**, for maximum light reduction, ideal for bedrooms and media rooms
+
+Both fabrics offer strong thermal performance, helping to keep the space cooler in summer and warmer in winter.
