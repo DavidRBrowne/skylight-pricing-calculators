@@ -93,6 +93,7 @@ const SonaCalculator = () => {
   const [margin, setMargin] = useState(50);
   const [sideTrims, setSideTrims] = useState(false);
   const [tBarColor, setTBarColor] = useState('white');
+  const [premiereRange, setPremiereRange] = useState(false); // 2026: Premieré Range +10% premium
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
 
@@ -301,9 +302,9 @@ const SonaCalculator = () => {
     html2pdf().set(pdfOptions).from(htmlContent).save();
   };
 
-  // Automatically enable side trims for duo-inward systems (required)
+  // Automatically enable side trims for duo-inward and trio systems (required)
   useEffect(() => {
-    if (systemType === 'duo-inward') {
+    if (systemType === 'duo-inward' || systemType === 'trio') {
       setSideTrims(true);
     } else if (systemType === 'single') {
       // Reset to false when switching to single blind
@@ -312,68 +313,72 @@ const SonaCalculator = () => {
   }, [systemType]);
 
   // Pricing tables
+  // 2026 SonaSky Dimout pricing
   const dimoutPricing = {
-    1000: { 1000: 344, 1200: 354, 1400: 365, 1600: 374, 1800: 386, 2000: 395, 2200: 407, 2400: 419, 2600: 431, 2800: 443, 3000: 455 },
-    1500: { 1000: 361, 1200: 372, 1400: 380, 1600: 391, 1800: 402, 2000: 408, 2200: 420, 2400: 432, 2600: 444, 2800: 457, 3000: 469 },
-    2000: { 1000: 377, 1200: 391, 1400: 399, 1600: 408, 1800: 419, 2000: 428, 2200: 440, 2400: 452, 2600: 464, 2800: 475, 3000: 487 },
-    2500: { 1000: 397, 1200: 411, 1400: 419, 1600: 430, 1800: 443, 2000: 454, 2200: 466, 2400: 479, 2600: 491, 2800: 502, 3000: 514 },
-    3000: { 1000: 416, 1200: 432, 1400: 440, 1600: 452, 1800: 457, 2000: 470, 2200: 482, 2400: 494, 2600: 506, 2800: 518, 3000: 530 },
-    3500: { 1000: 475, 1200: 486, 1400: 499, 1600: 512, 1800: 523, 2000: 535, 2200: 547, 2400: 559, 2600: 565, 2800: 578, 3000: 590 },
-    4000: { 1000: 562, 1200: 573, 1400: 586, 1600: 598, 1800: 608, 2000: 620, 2200: 633, 2400: 645, 2600: 651, 2800: 664, 3000: 677 },
-    4500: { 1000: 661, 1200: 673, 1400: 685, 1600: 697, 1800: 710, 2000: 722, 2200: 734, 2400: 746, 2600: 758, 2800: 770, 3000: 782 },
-    5000: { 1000: 868, 1200: 880, 1400: 892, 1600: 904, 1800: 916, 2000: 928, 2200: 941, 2400: 953, 2600: 965, 2800: 977, 3000: 989 }
+    1000: { 1000: 362, 1200: 372, 1400: 384, 1600: 393, 1800: 406, 2000: 415, 2200: 428, 2400: 440, 2600: 453, 2800: 466, 3000: 478 },
+    1500: { 1000: 380, 1200: 391, 1400: 399, 1600: 411, 1800: 423, 2000: 429, 2200: 441, 2400: 454, 2600: 467, 2800: 480, 3000: 493 },
+    2000: { 1000: 396, 1200: 411, 1400: 419, 1600: 429, 1800: 440, 2000: 450, 2200: 462, 2400: 475, 2600: 488, 2800: 499, 3000: 512 },
+    2500: { 1000: 417, 1200: 432, 1400: 440, 1600: 452, 1800: 466, 2000: 477, 2200: 490, 2400: 503, 2600: 516, 2800: 528, 3000: 540 },
+    3000: { 1000: 437, 1200: 454, 1400: 462, 1600: 475, 1800: 480, 2000: 494, 2200: 507, 2400: 519, 2600: 532, 2800: 544, 3000: 557 },
+    3500: { 1000: 499, 1200: 511, 1400: 524, 1600: 538, 1800: 550, 2000: 562, 2200: 575, 2400: 587, 2600: 594, 2800: 607, 3000: 620 },
+    4000: { 1000: 591, 1200: 602, 1400: 616, 1600: 628, 1800: 639, 2000: 651, 2200: 665, 2400: 678, 2600: 684, 2800: 698, 3000: 711 },
+    4500: { 1000: 695, 1200: 707, 1400: 720, 1600: 732, 1800: 746, 2000: 759, 2200: 771, 2400: 784, 2600: 796, 2800: 809, 3000: 822 },
+    5000: { 1000: 912, 1200: 924, 1400: 937, 1600: 950, 1800: 962, 2000: 975, 2200: 989, 2400: 1001, 2600: 1014, 2800: 1026, 3000: 1039 }
   };
 
+  // 2026 SonaSky Blackout pricing
   const blackoutPricing = {
-    1000: { 1000: 358, 1200: 367, 1400: 378, 1600: 387, 1800: 399, 2000: 408, 2200: 420, 2400: 432, 2600: 444, 2800: 457, 3000: 469 },
-    1500: { 1000: 374, 1200: 385, 1400: 393, 1600: 404, 1800: 415, 2000: 421, 2200: 433, 2400: 446, 2600: 458, 2800: 470, 3000: 482 },
-    2000: { 1000: 391, 1200: 404, 1400: 414, 1600: 421, 1800: 432, 2000: 441, 2200: 453, 2400: 465, 2600: 477, 2800: 488, 3000: 501 },
-    2500: { 1000: 410, 1200: 426, 1400: 432, 1600: 443, 1800: 457, 2000: 468, 2200: 480, 2400: 492, 2600: 504, 2800: 515, 3000: 527 },
-    3000: { 1000: 429, 1200: 446, 1400: 453, 1600: 465, 1800: 470, 2000: 483, 2200: 495, 2400: 507, 2600: 519, 2800: 531, 3000: 543 },
-    3500: { 1000: 488, 1200: 501, 1400: 513, 1600: 525, 1800: 536, 2000: 548, 2200: 560, 2400: 572, 2600: 579, 2800: 591, 3000: 603 },
-    4000: { 1000: 575, 1200: 587, 1400: 600, 1600: 612, 1800: 622, 2000: 634, 2200: 646, 2400: 658, 2600: 666, 2800: 678, 3000: 690 },
-    4500: { 1000: 678, 1200: 690, 1400: 702, 1600: 714, 1800: 726, 2000: 738, 2200: 750, 2400: 762, 2600: 774, 2800: 787, 3000: 799 },
-    5000: { 1000: 895, 1200: 908, 1400: 920, 1600: 932, 1800: 944, 2000: 956, 2200: 968, 2400: 980, 2600: 992, 2800: 1004, 3000: 1016 }
+    1000: { 1000: 376, 1200: 386, 1400: 397, 1600: 407, 1800: 419, 2000: 429, 2200: 441, 2400: 454, 2600: 467, 2800: 480, 3000: 493 },
+    1500: { 1000: 393, 1200: 405, 1400: 413, 1600: 425, 1800: 436, 2000: 443, 2200: 455, 2400: 469, 2600: 481, 2800: 494, 3000: 507 },
+    2000: { 1000: 411, 1200: 425, 1400: 435, 1600: 443, 1800: 454, 2000: 464, 2200: 476, 2400: 489, 2600: 501, 2800: 513, 3000: 527 },
+    2500: { 1000: 431, 1200: 448, 1400: 454, 1600: 466, 1800: 480, 2000: 492, 2200: 504, 2400: 517, 2600: 530, 2800: 541, 3000: 554 },
+    3000: { 1000: 451, 1200: 469, 1400: 476, 1600: 489, 1800: 494, 2000: 508, 2200: 520, 2400: 533, 2600: 545, 2800: 558, 3000: 571 },
+    3500: { 1000: 513, 1200: 527, 1400: 539, 1600: 552, 1800: 563, 2000: 576, 2200: 588, 2400: 601, 2600: 608, 2800: 621, 3000: 634 },
+    4000: { 1000: 604, 1200: 617, 1400: 630, 1600: 643, 1800: 654, 2000: 666, 2200: 679, 2400: 691, 2600: 700, 2800: 712, 3000: 725 },
+    4500: { 1000: 712, 1200: 725, 1400: 738, 1600: 750, 1800: 763, 2000: 775, 2200: 788, 2400: 801, 2600: 813, 2800: 827, 3000: 839 },
+    5000: { 1000: 940, 1200: 954, 1400: 966, 1600: 979, 1800: 992, 2000: 1004, 2200: 1017, 2400: 1029, 2600: 1042, 2800: 1055, 3000: 1067 }
   };
 
-  // Side Trims pricing table (from product sheet)
+  // 2026 SonaSky Side Trims pricing (includes 4 lengths of side trim)
   const sideTrimsPricing = {
-    1000: { 1000: 48, 1200: 53, 1400: 58, 1600: 62, 1800: 67, 2000: 72, 2200: 77, 2400: 82, 2600: 86, 2800: 91, 3000: 96 },
-    1500: { 1000: 60, 1200: 65, 1400: 70, 1600: 74, 1800: 79, 2000: 84, 2200: 89, 2400: 94, 2600: 98, 2800: 103, 3000: 108 },
-    2000: { 1000: 72, 1200: 77, 1400: 82, 1600: 86, 1800: 91, 2000: 96, 2200: 101, 2400: 106, 2600: 110, 2800: 115, 3000: 120 },
-    2500: { 1000: 84, 1200: 89, 1400: 94, 1600: 98, 1800: 103, 2000: 108, 2200: 113, 2400: 118, 2600: 122, 2800: 127, 3000: 132 },
-    3000: { 1000: 96, 1200: 101, 1400: 106, 1600: 110, 1800: 115, 2000: 120, 2200: 125, 2400: 130, 2600: 134, 2800: 139, 3000: 144 },
-    3500: { 1000: 108, 1200: 113, 1400: 118, 1600: 122, 1800: 127, 2000: 132, 2200: 137, 2400: 142, 2600: 146, 2800: 151, 3000: 156 },
-    4000: { 1000: 120, 1200: 125, 1400: 130, 1600: 134, 1800: 139, 2000: 144, 2200: 149, 2400: 154, 2600: 158, 2800: 163, 3000: 168 },
-    4500: { 1000: 132, 1200: 137, 1400: 142, 1600: 146, 1800: 151, 2000: 156, 2200: 161, 2400: 166, 2600: 170, 2800: 175, 3000: 180 },
-    5000: { 1000: 144, 1200: 149, 1400: 154, 1600: 158, 1800: 163, 2000: 168, 2200: 173, 2400: 178, 2600: 182, 2800: 187, 3000: 192 }
+    1000: { 1000: 53, 1200: 59, 1400: 65, 1600: 69, 1800: 74, 2000: 80, 2200: 86, 2400: 91, 2600: 95, 2800: 101, 3000: 107 },
+    1500: { 1000: 67, 1200: 72, 1400: 78, 1600: 82, 1800: 88, 2000: 93, 2200: 98, 2400: 104, 2600: 109, 2800: 114, 3000: 119 },
+    2000: { 1000: 80, 1200: 86, 1400: 91, 1600: 95, 1800: 101, 2000: 107, 2200: 112, 2400: 117, 2600: 122, 2800: 128, 3000: 133 },
+    2500: { 1000: 93, 1200: 98, 1400: 104, 1600: 109, 1800: 114, 2000: 119, 2200: 125, 2400: 131, 2600: 135, 2800: 140, 3000: 146 },
+    3000: { 1000: 107, 1200: 112, 1400: 117, 1600: 122, 1800: 128, 2000: 133, 2200: 138, 2400: 143, 2600: 149, 2800: 154, 3000: 159 },
+    3500: { 1000: 119, 1200: 125, 1400: 131, 1600: 135, 1800: 140, 2000: 146, 2200: 152, 2400: 157, 2600: 161, 2800: 167, 3000: 173 },
+    4000: { 1000: 133, 1200: 138, 1400: 143, 1600: 149, 1800: 154, 2000: 159, 2200: 164, 2400: 171, 2600: 175, 2800: 180, 3000: 185 },
+    4500: { 1000: 146, 1200: 152, 1400: 157, 1600: 161, 1800: 167, 2000: 173, 2200: 178, 2400: 183, 2600: 187, 2800: 194, 3000: 199 },
+    5000: { 1000: 159, 1200: 164, 1400: 171, 1600: 175, 1800: 180, 2000: 185, 2200: 192, 2400: 197, 2600: 201, 2800: 206, 3000: 213 }
   };
 
-  // Product configuration data
+  // 2026 Product configuration data - Power Options
   const powerOptions = {
-    solar: { name: "Solar Pack", price: 72, capacity: 1, needsCharger: false },
+    solar: { name: "Solar Pack", price: 76, capacity: 1, needsCharger: false },
     adapter: { name: "12v Mains Adapter", price: 18, capacity: 1, needsCharger: false },
     battery: { name: "Li-on USB-C Battery", price: 38, capacity: 1, needsCharger: true },
-    batteryCharger: { name: "Li-on USB-C Battery plus charger", price: 52, capacity: 1, needsCharger: false },
-    charger: { name: "Li-on USB-C Battery Charger", price: 14, capacity: 0, needsCharger: false },
-    sna45: { name: "SNA-45-12 Mains Transformer", price: 38, capacity: 1, needsCharger: false },
-    sna100: { name: "SNA-100-12 Mains Transformer", price: 63, capacity: 4, needsCharger: false },
-    sna75: { name: "SNA-75-12 Mains Transformer", price: 48, capacity: 3, needsCharger: false },
-    sna12151: { name: "SNA12151 Mains Transformer", price: 108, capacity: 6, needsCharger: false }
+    batteryCharger: { name: "Li-on USB-C Battery plus charger", price: 50, capacity: 1, needsCharger: false },
+    charger: { name: "Li-on USB-C Battery Charger", price: 12, capacity: 0, needsCharger: false },
+    sna45: { name: "SNA-45-12 Mains Transformer", price: 40, capacity: 1, needsCharger: false },
+    sna100: { name: "SNA-100-12 Mains Transformer", price: 65, capacity: 4, needsCharger: false },
+    sna75: { name: "SNA-75-12 Mains Transformer", price: 50, capacity: 3, needsCharger: false },
+    sna12151: { name: "SNA12151 Mains Transformer", price: 110, capacity: 6, needsCharger: false }
   };
 
+  // 2026 Handset Options
   const handsetOptions = {
     none: { name: "No Handset", price: 0 },
-    situo1: { name: "Situo 1 (1-channel)", price: 28 },
-    situo5: { name: "Situo 5 (5-channel)", price: 45 },
-    telis16: { name: "Telis 16 (16-channel)", price: 128 },
-    tahoma: { name: "TaHoma Switch", price: 138 }
+    situo1: { name: "Situo 1 (1-channel)", price: 29 },
+    situo5: { name: "Situo 5 (5-channel)", price: 47 },
+    telis16: { name: "Telis 16 (16-channel)", price: 134 },
+    tahoma: { name: "TaHoma Switch", price: 145 }
   };
 
+  // 2026 Wall Switch Options
   const wallSwitchOptions = {
     none: { name: "No Wall Switch", price: 0 },
-    smoove: { name: "Smoove Origin (1-channel)", price: 32 },
-    smoove4: { name: "Smoove Origin 4 (4-channel)", price: 45 }
+    smoove: { name: "Smoove Origin (1-channel)", price: 34 },
+    smoove4: { name: "Smoove Origin 4 (4-channel)", price: 47 }
   };
 
 
@@ -428,19 +433,31 @@ const SonaCalculator = () => {
     return true;
   };
 
-  // Calculate individual blind dimensions for Duo systems
+  // Calculate individual blind dimensions for Duo/Trio systems
   const calculateBlindDimensions = (totalLength, totalWidth, systemType) => {
     if (systemType === 'duo-inward') {
       // For inward: two blinds meet in center, each half the total length
       return {
         blind1: { length: totalLength / 2, width: totalWidth },
-        blind2: { length: totalLength / 2, width: totalWidth }
+        blind2: { length: totalLength / 2, width: totalWidth },
+        blind3: null,
+        blindCount: 2
       };
     } else if (systemType === 'duo-parallel') {
       // For parallel: two blinds side by side, each half the total width
       return {
         blind1: { length: totalLength, width: totalWidth / 2 },
-        blind2: { length: totalLength, width: totalWidth / 2 }
+        blind2: { length: totalLength, width: totalWidth / 2 },
+        blind3: null,
+        blindCount: 2
+      };
+    } else if (systemType === 'trio') {
+      // For trio: three blinds side by side, each one-third the total width
+      return {
+        blind1: { length: totalLength, width: totalWidth / 3 },
+        blind2: { length: totalLength, width: totalWidth / 3 },
+        blind3: { length: totalLength, width: totalWidth / 3 },
+        blindCount: 3
       };
     }
     return null;
@@ -464,13 +481,15 @@ const SonaCalculator = () => {
       
       // Validate dimensions based on system type
       let maxLength, maxWidth, minLength, minWidth;
-      
+
       if (systemType === 'single') {
         maxLength = 5000; maxWidth = 3000; minLength = 500; minWidth = 500;
       } else if (systemType === 'duo-inward') {
         maxLength = 10000; maxWidth = 3000; minLength = 1000; minWidth = 500;
       } else if (systemType === 'duo-parallel') {
         maxLength = 5000; maxWidth = 6000; minLength = 500; minWidth = 1000;
+      } else if (systemType === 'trio') {
+        maxLength = 3000; maxWidth = 9000; minLength = 500; minWidth = 1500; // Min width 1500 so each blind is 500
       }
       
       // Validate minimum dimensions
@@ -490,18 +509,29 @@ const SonaCalculator = () => {
             recommendation = 'Try Sona Sky Duo Inward configuration (max 3000×10000mm)';
           } else if (totalWidth <= 6000 && totalLength <= 5000) {
             recommendation = 'Try Sona Sky Duo Parallel configuration (max 6000×5000mm)';
+          } else if (totalWidth <= 9000 && totalLength <= 3000) {
+            recommendation = 'Try Sona Sky Trio configuration (max 9000×3000mm)';
           } else {
             recommendation = 'Dimensions too large for any configuration';
           }
         } else if (systemType === 'duo-inward') {
-          // Duo Inward exceeded - check if it fits parallel
+          // Duo Inward exceeded - check if it fits parallel or trio
           if (totalWidth <= 6000 && totalLength <= 5000) {
             recommendation = 'Try Sona Sky Duo Parallel configuration (max 6000×5000mm)';
+          } else if (totalWidth <= 9000 && totalLength <= 3000) {
+            recommendation = 'Try Sona Sky Trio configuration (max 9000×3000mm)';
           } else {
             recommendation = 'Dimensions exceed maximum for all configurations';
           }
         } else if (systemType === 'duo-parallel') {
-          // Duo Parallel exceeded - no other option
+          // Duo Parallel exceeded - check if it fits trio
+          if (totalWidth <= 9000 && totalLength <= 3000) {
+            recommendation = 'Try Sona Sky Trio configuration (max 9000×3000mm)';
+          } else {
+            recommendation = 'Dimensions exceed maximum for all configurations';
+          }
+        } else if (systemType === 'trio') {
+          // Trio exceeded - no other option
           recommendation = 'Dimensions exceed maximum for all configurations';
         }
         
@@ -511,17 +541,24 @@ const SonaCalculator = () => {
       }
 
       // Calculate blind dimensions
-      let blind1, blind2;
+      let blind1, blind2, blind3;
       if (systemType === 'single') {
         blind1 = { length: totalLength, width: totalWidth };
         blind2 = null;
+        blind3 = null;
       } else {
         const blindDims = calculateBlindDimensions(totalLength, totalWidth, systemType);
         blind1 = blindDims.blind1;
         blind2 = blindDims.blind2;
-        
+        blind3 = blindDims.blind3;
+
         // Validate individual blind minimums
         if (blind1.length < 500 || blind1.width < 500 || blind2.length < 500 || blind2.width < 500) {
+          setErrors(['Individual blinds must be at least 500mm × 500mm']);
+          setQuote(null);
+          return;
+        }
+        if (blind3 && (blind3.length < 500 || blind3.width < 500)) {
           setErrors(['Individual blinds must be at least 500mm × 500mm']);
           setQuote(null);
           return;
@@ -531,25 +568,31 @@ const SonaCalculator = () => {
       // Find next size up for pricing
       const lengthKeys = Object.keys(dimoutPricing).map(Number);
       const widthKeys = Object.keys(dimoutPricing[1000]).map(Number);
-      
+
       const nearestLength1 = findNextSizeUp(blind1.length, lengthKeys);
       const nearestWidth1 = findNextSizeUp(blind1.width, widthKeys);
-      
-      let nearestLength2, nearestWidth2;
+
+      let nearestLength2, nearestWidth2, nearestLength3, nearestWidth3;
       if (blind2) {
         nearestLength2 = findNextSizeUp(blind2.length, lengthKeys);
         nearestWidth2 = findNextSizeUp(blind2.width, widthKeys);
       }
+      if (blind3) {
+        nearestLength3 = findNextSizeUp(blind3.length, lengthKeys);
+        nearestWidth3 = findNextSizeUp(blind3.width, widthKeys);
+      }
 
       // Get pricing
       const pricingTable = fabricType === 'dimout' ? dimoutPricing : blackoutPricing;
-      const blind1Price = pricingTable[nearestLength1][nearestWidth1];
-      const blind2Price = blind2 ? pricingTable[nearestLength2][nearestWidth2] : 0;
+      const premiereMultiplier = premiereRange ? 1.10 : 1.0; // +10% for Premieré Range
+      const blind1Price = Math.round(pricingTable[nearestLength1][nearestWidth1] * premiereMultiplier);
+      const blind2Price = blind2 ? Math.round(pricingTable[nearestLength2][nearestWidth2] * premiereMultiplier) : 0;
+      const blind3Price = blind3 ? Math.round(pricingTable[nearestLength3][nearestWidth3] * premiereMultiplier) : 0;
       
       // Calculate Side Trims price
       let sideTrimsPrice_calc = 0;
-      if (systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims)) {
-        // For Duo systems, calculate Side Trims based on total dimensions
+      if (systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims) || systemType === 'trio') {
+        // For Duo/Trio systems, calculate Side Trims based on total dimensions
         const sideTrimsLength = findNextSizeUp(totalLength, lengthKeys);
         const sideTrimsWidth = findNextSizeUp(totalWidth, widthKeys);
         sideTrimsPrice_calc = sideTrimsPricing[sideTrimsLength][sideTrimsWidth];
@@ -560,11 +603,11 @@ const SonaCalculator = () => {
       
       // Calculate power hardware cost based on system type and capacity
       let powerPrice, powerQuantity, chargerPrice, chargerQuantity;
-      
+
       if (systemType === 'single') {
         powerQuantity = 1;
         powerPrice = powerOptions[powerSupply].price * powerQuantity;
-        
+
         // Add charger if needed
         if (powerOptions[powerSupply].needsCharger) {
           chargerQuantity = 1;
@@ -574,10 +617,10 @@ const SonaCalculator = () => {
           chargerPrice = 0;
         }
       } else {
-        // Duo system - calculate based on capacity
-        const requiredBlinds = 2;
+        // Duo/Trio system - calculate based on capacity
+        const requiredBlinds = systemType === 'trio' ? 3 : 2;
         const capacity = powerOptions[powerSupply].capacity;
-        
+
         if (capacity >= requiredBlinds) {
           // One transformer can handle multiple blinds
           powerQuantity = 1;
@@ -587,7 +630,7 @@ const SonaCalculator = () => {
           powerQuantity = Math.ceil(requiredBlinds / capacity);
           powerPrice = powerOptions[powerSupply].price * powerQuantity;
         }
-        
+
         // For batteries, only need one charger regardless of quantity
         if (powerOptions[powerSupply].needsCharger) {
           chargerQuantity = 1;
@@ -602,9 +645,17 @@ const SonaCalculator = () => {
       const handsetPrice = handsetOptions[handset].price;
       const wallSwitchPrice = wallSwitchOptions[wallSwitch].price;
 
-      const subtotal = blind1Price + blind2Price + sideTrimsPrice_calc + totalPowerPrice + handsetPrice + wallSwitchPrice;
+      // Calculate long length surcharge (2026: £15 for blinds over 2.4m length)
+      const longLengthThreshold = 2400; // mm
+      const longLengthSurcharge = 15;
+      const hasLongLength = blind1.length > longLengthThreshold ||
+                           (blind2 && blind2.length > longLengthThreshold) ||
+                           (blind3 && blind3.length > longLengthThreshold);
+      const longLengthCost = hasLongLength ? longLengthSurcharge : 0;
+
+      const subtotal = blind1Price + blind2Price + blind3Price + sideTrimsPrice_calc + totalPowerPrice + handsetPrice + wallSwitchPrice;
       const shipping = 25; // UK Courier Delivery
-      const buyPriceTotal = subtotal + shipping;
+      const buyPriceTotal = subtotal + shipping + longLengthCost;
       
       // Calculate retail pricing - margin applied to total OBP (including delivery)
       const retailTotal = Math.round(buyPriceTotal / (1 - margin / 100));
@@ -626,25 +677,42 @@ const SonaCalculator = () => {
           nearest: { length: nearestLength2, width: nearestWidth2 },
           price: blind2Price
         } : null,
-        fabric: { type: fabricType, color: fabricColor },
+        blind3: blind3 ? {
+          dimensions: blind3,
+          nearest: { length: nearestLength3, width: nearestWidth3 },
+          price: blind3Price
+        } : null,
+        fabric: { type: fabricType, color: fabricColor, premiereRange: premiereRange },
         hardware: hardwareOptions[hardwareColor],
-        tBar: systemType !== 'single' && (systemType === 'duo-inward' || sideTrims) ? {
-          required: systemType === 'duo-inward',
+        tBar: systemType !== 'single' && (systemType === 'duo-inward' || systemType === 'trio' || sideTrims) ? {
+          required: systemType === 'duo-inward' || systemType === 'trio',
+          count: systemType === 'trio' ? 2 : 1,
           color: tBarColorOptions[tBarColor]
         } : null,
-        cordCount: systemType === 'single' 
+        cordCount: systemType === 'single'
           ? getCordCount(totalWidth)
-          : {
-              // For Duo systems, each blind needs its own cords
-              blind1: getCordCount(blind1.width),
-              blind2: getCordCount(blind2.width),
-              total: getCordCount(blind1.width).total + getCordCount(blind2.width).total,
-              spooling: getCordCount(blind1.width).spooling + getCordCount(blind2.width).spooling,
-              support: getCordCount(blind1.width).support + getCordCount(blind2.width).support
-            },
+          : systemType === 'trio'
+            ? {
+                // For Trio systems, each blind needs its own cords
+                blind1: getCordCount(blind1.width),
+                blind2: getCordCount(blind2.width),
+                blind3: getCordCount(blind3.width),
+                total: getCordCount(blind1.width).total + getCordCount(blind2.width).total + getCordCount(blind3.width).total,
+                spooling: getCordCount(blind1.width).spooling + getCordCount(blind2.width).spooling + getCordCount(blind3.width).spooling,
+                support: getCordCount(blind1.width).support + getCordCount(blind2.width).support + getCordCount(blind3.width).support
+              }
+            : {
+                // For Duo systems, each blind needs its own cords
+                blind1: getCordCount(blind1.width),
+                blind2: getCordCount(blind2.width),
+                total: getCordCount(blind1.width).total + getCordCount(blind2.width).total,
+                spooling: getCordCount(blind1.width).spooling + getCordCount(blind2.width).spooling,
+                support: getCordCount(blind1.width).support + getCordCount(blind2.width).support
+              },
         pricing: {
           blind1: blind1Price,
           blind2: blind2Price,
+          blind3: blind3Price,
           sideTrims: sideTrimsPrice_calc,
           power: {
             total: totalPowerPrice,
@@ -657,6 +725,7 @@ const SonaCalculator = () => {
           wallSwitch: wallSwitchPrice,
           buySubtotal: subtotal,
           shipping,
+          longLengthSurcharge: longLengthCost,
           buyTotal: buyPriceTotal,
           retailTotal,
           retailTotalIncVAT,
@@ -673,7 +742,7 @@ const SonaCalculator = () => {
       setQuote(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [systemType, recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin, sideTrims, tBarColor]);
+  }, [systemType, recess.length, recess.width, fabricType, fabricColor, hardwareColor, powerSupply, handset, wallSwitch, margin, sideTrims, tBarColor, premiereRange]);
 
   const SystemGuideModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -1226,6 +1295,25 @@ const SonaCalculator = () => {
                 </div>
               </div>
             </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="systemType"
+                value="trio"
+                checked={systemType === 'trio'}
+                onChange={(e) => setSystemType(e.target.value)}
+                className="mr-3"
+              />
+              <div>
+                <div className="font-semibold">SonaSky Trio - Parallel Configuration</div>
+                <div className="text-sm text-gray-600">
+                  Three blinds run side-by-side (Max: 9000mm × 3000mm) - Side Trims required
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Width triples to 9m. Includes two central T-Bars where blinds meet
+                </div>
+              </div>
+            </label>
           </div>
           
           <div className="mt-4 flex flex-wrap gap-3">
@@ -1272,16 +1360,18 @@ const SonaCalculator = () => {
                       onBlur={(e) => {
                         // Final validation on blur
                         const value = parseInt(e.target.value);
-                        if (!isNaN(value) && value >= 500 && value <= (systemType === 'duo-parallel' ? 6000 : 3000)) {
+                        const maxWidth = systemType === 'trio' ? 9000 : (systemType === 'duo-parallel' ? 6000 : 3000);
+                        const minWidth = systemType === 'trio' ? 1500 : 500;
+                        if (!isNaN(value) && value >= minWidth && value <= maxWidth) {
                           setRecess({...recess, width: value.toString()});
                         } else if (e.target.value === '') {
                           setRecess({...recess, width: ''});
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder={systemType === 'duo-parallel' ? '500-6000mm' : '500-3000mm'}
-                      min="500"
-                      max={systemType === 'duo-parallel' ? '6000' : '3000'}
+                      placeholder={systemType === 'trio' ? '1500-9000mm' : (systemType === 'duo-parallel' ? '500-6000mm' : '500-3000mm')}
+                      min={systemType === 'trio' ? '1500' : '500'}
+                      max={systemType === 'trio' ? '9000' : (systemType === 'duo-parallel' ? '6000' : '3000')}
                       maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
@@ -1303,7 +1393,7 @@ const SonaCalculator = () => {
                         // Final validation on blur
                         const value = parseInt(e.target.value);
                         const minLength = systemType === 'duo-inward' ? 1000 : 500;
-                        const maxLength = systemType === 'duo-inward' ? 10000 : 5000;
+                        const maxLength = systemType === 'trio' ? 3000 : (systemType === 'duo-inward' ? 10000 : 5000);
                         if (!isNaN(value) && value >= minLength && value <= maxLength) {
                           setRecess({...recess, length: value.toString()});
                         } else if (e.target.value === '') {
@@ -1311,9 +1401,9 @@ const SonaCalculator = () => {
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder={systemType === 'duo-inward' ? '1000-10000mm' : '500-5000mm'}
+                      placeholder={systemType === 'trio' ? '500-3000mm' : (systemType === 'duo-inward' ? '1000-10000mm' : '500-5000mm')}
                       min={systemType === 'duo-inward' ? '1000' : '500'}
-                      max={systemType === 'duo-inward' ? '10000' : '5000'}
+                      max={systemType === 'trio' ? '3000' : (systemType === 'duo-inward' ? '10000' : '5000')}
                       maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
@@ -1402,6 +1492,22 @@ const SonaCalculator = () => {
                       </svg>
                       Need help choosing? View fabric swatches
                     </button>
+                  </div>
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={premiereRange}
+                        onChange={(e) => setPremiereRange(e.target.checked)}
+                        className="mr-3"
+                      />
+                      <div>
+                        <span className="font-medium text-amber-800">Premieré Range (+10%)</span>
+                        <p className="text-sm text-amber-700 mt-1">
+                          Premium fabric upgrade - adds 10% to the blind price
+                        </p>
+                      </div>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -1569,7 +1675,14 @@ const SonaCalculator = () => {
                       </p>
                     </div>
                   )}
-                  {(systemType === 'duo-inward' || (systemType === 'duo-parallel' && sideTrims)) && (
+                  {systemType === 'trio' && (
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        <strong>Trio Configuration:</strong> Side Trims and 2 T-Bars are required. Includes 4 lengths of aluminium trim and 2 central T-Bars where the blinds meet.
+                      </p>
+                    </div>
+                  )}
+                  {(systemType === 'duo-inward' || systemType === 'trio' || (systemType === 'duo-parallel' && sideTrims)) && (
                     <div>
                       <label className="block text-sm font-medium mb-2" style={{ color: brandConfig.colors.deepTeal }}>T-Bar Color</label>
                       <select
