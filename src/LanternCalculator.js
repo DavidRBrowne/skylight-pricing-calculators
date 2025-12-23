@@ -7,7 +7,7 @@ function LanternCalculator() {
   const [recess, setRecess] = useState({ width: '', drop: '' });
   const [fabricType, setFabricType] = useState('translucent'); // translucent or roomDarkening
   const [fabricRange, setFabricRange] = useState('trueRioja'); // trueRioja, unixDuette, elanDuette
-  const [margin, setMargin] = useState(40);
+  const [margin, setMargin] = useState(50);
   const [customMargin, setCustomMargin] = useState('');
   const [quote, setQuote] = useState(null);
   const [errors, setErrors] = useState([]);
@@ -443,7 +443,7 @@ function LanternCalculator() {
                   <h3 className="text-xl font-bold" style={{ color: brandConfig.colors.deepTeal }}>Margin</h3>
                 </div>
                 <div className="grid grid-cols-4 gap-2 mb-3">
-                  {[30, 35, 40, 45].map((m) => (
+                  {[50, 56, 60, 65].map((m) => (
                     <button
                       key={m}
                       onClick={() => { setMargin(m); setCustomMargin(''); }}
