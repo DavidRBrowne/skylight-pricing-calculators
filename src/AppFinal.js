@@ -487,7 +487,8 @@ const SonaCalculator = () => {
       } else if (systemType === 'duo-inward') {
         maxLength = 10000; maxWidth = 3000; minLength = 1000; minWidth = 500;
       } else if (systemType === 'duo-parallel') {
-        maxLength = 5000; maxWidth = 6000; minLength = 500; minWidth = 1000;
+        // With side trims/T-bar, max length drops to 3000mm
+        maxLength = sideTrims ? 3000 : 5000; maxWidth = 6000; minLength = 500; minWidth = 1000;
       } else if (systemType === 'trio') {
         maxLength = 3000; maxWidth = 9000; minLength = 500; minWidth = 1500; // Min width 1500 so each blind is 500
       }
@@ -801,8 +802,8 @@ const SonaCalculator = () => {
                   <tr>
                     <td className="border p-2 font-semibold">Duo - Parallel</td>
                     <td className="border p-2 text-center">6000mm</td>
-                    <td className="border p-2 text-center">5000mm</td>
-                    <td className="border p-2 text-center">Recommended</td>
+                    <td className="border p-2 text-center">5000mm*</td>
+                    <td className="border p-2 text-center">Optional</td>
                     <td className="border p-2">Wide openings</td>
                   </tr>
                   <tr>
@@ -814,6 +815,7 @@ const SonaCalculator = () => {
                   </tr>
                 </tbody>
               </table>
+              <p className="text-xs text-gray-500 mt-2">* With Side Trims & T-Bar, max length reduces to 3000mm</p>
             </div>
           </div>
 
@@ -839,11 +841,12 @@ const SonaCalculator = () => {
           <div>
             <h3 className="text-lg font-semibold mb-2">Duo - Parallel Configuration</h3>
             <p className="text-gray-700 mb-2">
-              Two blinds run side by side independently. With this system the T-bar is optional
-              but we would almost always recommend it. The maximum width for this system is 6000mm
-              (two 3000mm max blinds side by side) with a maximum drop of 5000mm (that of a single blind).
+              Two blinds run side by side independently. The Side Trims and T-bar are optional
+              and serve an aesthetic purpose. The maximum width for this system is 6000mm
+              (two 3000mm max blinds side by side). Without Side Trims, maximum length is 5000mm.
+              With Side Trims & T-bar, maximum length reduces to 3000mm.
             </p>
-            <p className="text-sm text-gray-600">Maximum size: 6000mm × 5000mm (T-bar strongly recommended)</p>
+            <p className="text-sm text-gray-600">Maximum size: 6000mm × 5000mm (without trims) or 6000mm × 3000mm (with trims)</p>
           </div>
 
           <div>
@@ -1307,10 +1310,10 @@ const SonaCalculator = () => {
               <div>
                 <div className="font-semibold">SonaSky Duo - Parallel Configuration</div>
                 <div className="text-sm text-gray-600">
-                  Two blinds run side-by-side (Max: 6000mm × 5000mm) - T-Bar strongly recommended
+                  Two blinds run side-by-side (Max: 6000mm × 5000mm) - Side Trims & T-Bar optional
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
-                  Width doubles to 6m. T-bar optional but we recommend it where blinds meet
+                  Width doubles to 6m. With Side Trims & T-Bar, max length reduces to 3000mm
                 </div>
               </div>
             </label>
@@ -1326,10 +1329,10 @@ const SonaCalculator = () => {
               <div>
                 <div className="font-semibold">SonaSky Trio - Parallel Configuration</div>
                 <div className="text-sm text-gray-600">
-                  Three blinds run side-by-side (Max: 9000mm × 3000mm) - Side Trims required
+                  Three blinds run side-by-side (Max: 9000mm × 3000mm) - Side Trims & T-Bars required
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
-                  Width triples to 9m. Includes two central T-Bars where blinds meet
+                  Width triples to 9m. Requires Side Trims and two central T-Bars
                 </div>
               </div>
             </label>
@@ -1412,7 +1415,8 @@ const SonaCalculator = () => {
                         // Final validation on blur
                         const value = parseInt(e.target.value);
                         const minLength = systemType === 'duo-inward' ? 1000 : 500;
-                        const maxLength = systemType === 'trio' ? 3000 : (systemType === 'duo-inward' ? 10000 : 5000);
+                        // Duo-parallel with side trims has max 3000mm length
+                        const maxLength = systemType === 'trio' ? 3000 : (systemType === 'duo-inward' ? 10000 : (systemType === 'duo-parallel' && sideTrims ? 3000 : 5000));
                         if (!isNaN(value) && value >= minLength && value <= maxLength) {
                           setRecess({...recess, length: value.toString()});
                         } else if (e.target.value === '') {
@@ -1420,9 +1424,9 @@ const SonaCalculator = () => {
                         }
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder={systemType === 'trio' ? '500-3000mm' : (systemType === 'duo-inward' ? '1000-10000mm' : '500-5000mm')}
+                      placeholder={systemType === 'trio' ? '500-3000mm' : (systemType === 'duo-inward' ? '1000-10000mm' : (systemType === 'duo-parallel' && sideTrims ? '500-3000mm' : '500-5000mm'))}
                       min={systemType === 'duo-inward' ? '1000' : '500'}
-                      max={systemType === 'trio' ? '3000' : (systemType === 'duo-inward' ? '10000' : '5000')}
+                      max={systemType === 'trio' ? '3000' : (systemType === 'duo-inward' ? '10000' : (systemType === 'duo-parallel' && sideTrims ? '3000' : '5000'))}
                       maxLength={securityConfig.security.maxInputLength}
                     />
                   </div>
